@@ -22,12 +22,16 @@ $(function() {
     var typing = false;
     var lastTypingTime;
     var $currentInput = $usernameInput.focus();
+    var $receiver = $('.receiverId');
+    var $sendBtn = $('#sendMsgBtn');
+    $sendBtn.click(() => {
+        console.log("sending...");
+        sendMessage();
+        socket.emit('stop typing');
+        typing = false;
+    })
 
-    var socket = io({
-        query: {
-            roomId: 'private'
-        }
-    });
+    var socket = io();
 
     const addParticipantsMessage = (data) => {
         var message = '';
@@ -48,7 +52,7 @@ $(function() {
             $loginPage.fadeOut();
             $chatPage.show();
             $loginPage.off('click');
-            $currentInput = $inputMessage.focus();
+            //   $currentInput = $inputMessage.focus();
 
             // Tell the server your username
             socket.emit('add user', username);
@@ -58,17 +62,21 @@ $(function() {
     // Sends a chat message
     const sendMessage = () => {
         var message = $inputMessage.val();
+        var receiver = $receiver.val();
         // Prevent markup from being injected into the message
         message = cleanInput(message);
         // if there is a non-empty message and a socket connection
         if (message && connected) {
             $inputMessage.val('');
-            addChatMessage({
-                username: username,
-                message: message
-            });
+            const data = {
+                sender: username,
+                receiver: receiver,
+                message
+            };
+            console.log(data);
+            addChatMessage(data);
             // tell server to execute 'new message' and send along one parameter
-            socket.emit('new message', message);
+            socket.emit('new message', data);
         }
     }
 
@@ -89,14 +97,14 @@ $(function() {
         }
 
         var $usernameDiv = $('<span class="username"/>')
-            .text(data.username)
-            .css('color', getUsernameColor(data.username));
+            .text(data.sender)
+            .css('color', getUsernameColor(data.sender));
         var $messageBodyDiv = $('<span class="messageBody">')
             .text(data.message);
 
         var typingClass = data.typing ? 'typing' : '';
         var $messageDiv = $('<li class="message"/>')
-            .data('username', data.username)
+            .data('username', data.sender)
             .addClass(typingClass)
             .append($usernameDiv, $messageBodyDiv);
 
@@ -242,6 +250,7 @@ $(function() {
 
     // Whenever the server emits 'new message', update the chat body
     socket.on('new message', (data) => {
+        console.log("receiving: ", data);
         addChatMessage(data);
     });
 
