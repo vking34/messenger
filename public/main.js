@@ -163,10 +163,15 @@ $(function() {
 
     // Updates the typing event
     const updateTyping = () => {
+        var receiver = $receiver.val();
         if (connected) {
             if (!typing) {
                 typing = true;
-                socket.emit('typing');
+
+                socket.emit('typing', {
+                    sender: username,
+                    receiver
+                });
             }
             lastTypingTime = (new Date()).getTime();
 
@@ -174,7 +179,10 @@ $(function() {
                 var typingTimer = (new Date()).getTime();
                 var timeDiff = typingTimer - lastTypingTime;
                 if (timeDiff >= TYPING_TIMER_LENGTH && typing) {
-                    socket.emit('stop typing');
+                    socket.emit('stop typing', {
+                        sender: username,
+                        receiver
+                    });
                     typing = false;
                 }
             }, TYPING_TIMER_LENGTH);
@@ -184,7 +192,7 @@ $(function() {
     // Gets the 'X is typing' messages of a user
     const getTypingMessages = (data) => {
         return $('.typing.message').filter(function(i) {
-            return $(this).data('username') === data.username;
+            return $(this).data('username') === data.sender;
         });
     }
 
@@ -211,7 +219,11 @@ $(function() {
         if (event.which === 13) {
             if (username) {
                 sendMessage();
-                socket.emit('stop typing');
+                var receiver = $receiver.val();
+                socket.emit('stop typing', {
+                    sender: username,
+                    receiver
+                });
                 typing = false;
             } else {
                 setUsername();
@@ -239,9 +251,10 @@ $(function() {
 
     // Whenever the server emits 'login', log the login message
     socket.on('login', (data) => {
+        console.log('logged in!');
         connected = true;
         // Display the welcome message
-        var message = "Welcome to Socket.IO Chat – ";
+        var message = "Welcome" + username;
         log(message, {
             prepend: true
         });
