@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
 import http from 'http';
-import redisClient from './redis_client';
+// import redisClient from './redis_client';
 
 const app = express();
 const server = http.createServer(app);
@@ -24,19 +24,8 @@ io.on('connection', (socket) => {
         const { sender, receiver } = data;
         
         console.log(data);
-        let receiverSockets = await redisClient.lrangeAsync(receiver, 0, -1);
-        let senderSockets = await redisClient.lrangeAsync(sender, 0, -1);
-
-        console.log("receiver sockets: " + receiverSockets);
-        console.log("sender sockets: " + senderSockets);
-        
-        receiverSockets.forEach(socket => {
-            io.to(socket).emit('new message', data);
-        });
-        
-        senderSockets.forEach(socket => {
-            io.to(socket).emit('new message', data);
-        });
+        io.to(sender).emit('new message', data);
+        io.to(receiver).emit('new message', data);
     });
 
     // when the client emits 'add user', this listens and executes
@@ -49,9 +38,7 @@ io.on('connection', (socket) => {
         ++numUsers;
         addedUser = true;
 
-        // save {username: socket.id} into cache
-        console.log("socket ID:", socket.id);
-        redisClient.lpushAsync(sender, socket.id);
+        socket.join(sender);
 
         socket.emit('login', {
             numUsers: numUsers
@@ -69,16 +56,8 @@ io.on('connection', (socket) => {
         const { sender, receiver } = data;
         console.log(data, " typing");
         
-        let receiverSockets = await redisClient.lrangeAsync(receiver, 0, -1);
-        let senderSockets = await redisClient.lrangeAsync(sender, 0, -1);
-
-        receiverSockets.forEach(socket => {
-            io.to(socket).emit('typing', data);
-        });
-        
-        senderSockets.forEach(socket => {
-            io.to(socket).emit('typing', data);
-        });
+        io.to(sender).emit('typing', data);
+        io.to(receiver).emit('typing', data);
     });
 
     // when the client emits 'stop typing', we broadcast it to others
@@ -86,16 +65,8 @@ io.on('connection', (socket) => {
         const { sender, receiver } = data;
         console.log(data, " stop typing");
 
-        let receiverSockets = await redisClient.lrangeAsync(receiver, 0, -1);
-        let senderSockets = await redisClient.lrangeAsync(sender, 0, -1);
-
-        receiverSockets.forEach(socket => {
-            io.to(socket).emit('stop typing', data);
-        });
-        
-        senderSockets.forEach(socket => {
-            io.to(socket).emit('stop typing', data);
-        });
+        io.to(sender).emit('stop typing', data);
+        io.to(receiver).emit('stop typing', data);
     });
 
     // when the user disconnects.. perform this
@@ -104,7 +75,7 @@ io.on('connection', (socket) => {
             --numUsers;
             console.log(socket.username, ' disconnected!');
 
-            redisClient.lremAsync(socket.username, 0, socket.id);
+            socket.leave(socket.username);
             socket.broadcast.emit('user left', {
                 username: socket.username,
                 numUsers: numUsers
