@@ -9,7 +9,9 @@ $(function() {
 
     // Initialize variables
     var $window = $(window);
-    var $usernameInput = $('.usernameInput'); // Input for username
+    var $senderId = $('#senderId'); // Input for sender ID
+    var $receiverId = $('#receiverId');
+
     var $messages = $('.messages'); // Messages area
     var $inputMessage = $('.inputMessage'); // Input message input box
 
@@ -18,16 +20,21 @@ $(function() {
 
     // Prompt for setting a username
     var username;
+    var receiver;
     var connected = false;
     var typing = false;
     var lastTypingTime;
-    var $currentInput = $usernameInput.focus();
+    // var $currentInput = $senderId.focus();
+
     var $receiver = $('.receiverId');
     var $sendBtn = $('#sendMsgBtn');
     $sendBtn.click(() => {
         console.log("sending...");
         sendMessage();
-        socket.emit('stop typing');
+        socket.emit('stop typing', {
+            sender: username,
+            receiver
+        });
         typing = false;
     })
 
@@ -44,25 +51,25 @@ $(function() {
     }
 
     // Sets the client's username
-    const setUsername = () => {
-        username = cleanInput($usernameInput.val().trim());
-
+    const setUsernames = () => {
+        username = cleanInput($senderId.val().trim());
+        receiver = cleanInput($receiverId.val().trim());
+        const data = { sender: username, receiver };
+        console.log(data);
         // If the username is valid
         if (username) {
             $loginPage.fadeOut();
             $chatPage.show();
             $loginPage.off('click');
-            //   $currentInput = $inputMessage.focus();
 
             // Tell the server your username
-            socket.emit('add user', username);
+            socket.emit('set usernames', data);
         }
     }
 
     // Sends a chat message
     const sendMessage = () => {
         var message = $inputMessage.val();
-        var receiver = $receiver.val();
         // Prevent markup from being injected into the message
         message = cleanInput(message);
         // if there is a non-empty message and a socket connection
@@ -120,6 +127,7 @@ $(function() {
 
     // Removes the visual chat typing message
     const removeChatTyping = (data) => {
+        console.log("stop typing, ", data);
         getTypingMessages(data).fadeOut(function() {
             $(this).remove();
         });
@@ -163,7 +171,6 @@ $(function() {
 
     // Updates the typing event
     const updateTyping = () => {
-        var receiver = $receiver.val();
         if (connected) {
             if (!typing) {
                 typing = true;
@@ -212,9 +219,9 @@ $(function() {
 
     $window.keydown(event => {
         // Auto-focus the current input when a key is typed
-        if (!(event.ctrlKey || event.metaKey || event.altKey)) {
-            $currentInput.focus();
-        }
+        // if (!(event.ctrlKey || event.metaKey || event.altKey)) {
+        //     $currentInput.focus();
+        // }
         // When the client hits ENTER on their keyboard
         if (event.which === 13) {
             if (username) {
@@ -226,7 +233,7 @@ $(function() {
                 });
                 typing = false;
             } else {
-                setUsername();
+                setUsernames();
             }
         }
     });
@@ -238,9 +245,9 @@ $(function() {
     // Click events
 
     // Focus input when clicking anywhere on login page
-    $loginPage.click(() => {
-        $currentInput.focus();
-    });
+    // $loginPage.click(() => {
+    //     $currentInput.focus();
+    // });
 
     // Focus input when clicking on the message input's border
     $inputMessage.click(() => {
@@ -254,7 +261,7 @@ $(function() {
         console.log('logged in!');
         connected = true;
         // Display the welcome message
-        var message = "Welcome" + username;
+        var message = "Sender: " + username + ", Receiver: " + receiver;
         log(message, {
             prepend: true
         });
@@ -297,7 +304,7 @@ $(function() {
     socket.on('reconnect', () => {
         log('you have been reconnected');
         if (username) {
-            socket.emit('add user', username);
+            socket.emit('set usernames', { sender: username, receiver });
         }
     });
 

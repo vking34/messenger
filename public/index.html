@@ -10,7 +10,6 @@
 <body>
     <ul class="pages">
         <li class="chat page">
-            <input class="receiverId" placeholder="Receiver" />
             <div class="chatArea">
                 <ul class="messages"></ul>
             </div>
@@ -19,8 +18,11 @@
         </li>
         <li class="login page">
             <div class="form">
-                <h3 class="title">What's your nickname?</h3>
-                <input class="usernameInput" type="text" maxlength="14" />
+                <h3 class="title">What's sender username?</h3>
+                <input id="senderId" class="usernameInput" placeholder="Sender" type="text" maxlength="14" />
+
+                <h3 class="title">What's receiver username?</h3>
+                <input id="receiverId" class="usernameInput" placeholder="Receiver" type="text" maxlength="14" />
             </div>
         </li>
     </ul>

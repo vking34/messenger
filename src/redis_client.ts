@@ -13,4 +13,8 @@ export default {
      getAsync: promisify(redis_client.get).bind(redis_client),
      setAsync: promisify(redis_client.set).bind(redis_client),
      keysAsync: promisify(redis_client.keys).bind(redis_client),
+     lpushAsync: promisify(redis_client.lpush).bind(redis_client),
+     lremAsync: promisify(redis_client.lrem).bind(redis_client),
+     lrangeAsync: promisify(redis_client.lrange).bind(redis_client),
+     flushallAsync: promisify(redis_client.flushall).bind(redis_client)
 };
