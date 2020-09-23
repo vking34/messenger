@@ -2,10 +2,14 @@ import express from 'express';
 import path from 'path';
 import http from 'http';
 // import redisClient from './redis_client';
+import redisAdapter from 'socket.io-redis';
 
+require('dotenv').config();
 const app = express();
 const server = http.createServer(app);
 const io = require('socket.io')(server);
+io.adapter(redisAdapter({host: process.env.REDIS_HOST, port: process.env.REDIS_PORT }));
+console.log(process.env.PORT, process.env.REDIS_HOST);
 const port = process.env.PORT || 3000;
 
 app.use(express.static(path.join(__dirname, '../public')));

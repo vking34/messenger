@@ -18,7 +18,8 @@
     "http": "0.0.1-security",
     "path": "^0.12.7",
     "redis": "^3.0.2",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.3.0",
+    "socket.io-redis": "^5.4.0"
   },
   "devDependencies": {
     "dotenv": "^8.2.0",
