@@ -4,6 +4,7 @@ const mongoose: Mongoose = require('mongoose');
 const SchemaCreator = mongoose.Schema;
 
 const messageSchema: Schema = new SchemaCreator({
+     _id: String,
      sender: {
           type: String,
           required: [true, 'Sender username is required!']

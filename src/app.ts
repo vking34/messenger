@@ -6,6 +6,7 @@ import bodyParser from 'body-parser';
 import redisAdapter from 'socket.io-redis';
 import { Socket } from 'socket.io';
 import monogoose from 'mongoose';
+import cuid from 'cuid';
 
 // routes
 import roomRoute from './routes/room';
@@ -63,21 +64,20 @@ io.on('connection', (socket: Socket) => {
         io.to(receiver).emit('new_message', msg);
 
         if(msg.sender.localeCompare(msg.receiver) > 0)
-          var roomId: string = msg.receiver as string + '.' + msg.sender as string;
+            var roomId: string = msg.receiver as string + '.' + msg.sender as string;
         else
             var roomId: string = msg.sender as string + '.' + msg.receiver as string; 
 
-        var message = new Message({
+        Message.create({
+            _id: cuid(),
             ...msg,
             room_id: roomId,
             type: 'SSB',
             is_read: false
-        });
-        
-        message.save()
+        })
         .catch((error: any) => {
             console.log(error);
-        })
+        });
     });
 
     // when the client emits 'add user', this listens and executes

@@ -1,5 +1,6 @@
 import express, {Request, Response, Router } from 'express';
 import Message from '../models/message';
+import cuid from 'cuid';
 
 
 const router: Router = express.Router();
@@ -19,6 +20,7 @@ router.post('/', (req: Request, resp: Response) => {
           var roomId: string = msg.sender as string + '.' + msg.receiver as string; 
 
      var message = new Message({
+          _id: cuid(),
           ...msg,
           room_id: roomId,
           type: 'SSB',
