@@ -78,12 +78,12 @@ $(function() {
             const data = {
                 sender: username,
                 receiver: receiver,
-                message
+                content: message
             };
             console.log(data);
             //   addChatMessage(data);
-            // tell server to execute 'new message' and send along one parameter
-            socket.emit('new message', data);
+            // tell server to execute 'new_message' and send along one parameter
+            socket.emit('new_message', data);
         }
     }
 
@@ -107,7 +107,7 @@ $(function() {
             .text(data.sender)
             .css('color', getUsernameColor(data.sender));
         var $messageBodyDiv = $('<span class="messageBody">')
-            .text(data.message);
+            .text(data.content);
 
         var typingClass = data.typing ? 'typing' : '';
         var $messageDiv = $('<li class="message"/>')
@@ -121,7 +121,7 @@ $(function() {
     // Adds the visual chat typing message
     const addChatTyping = (data) => {
         data.typing = true;
-        data.message = 'is typing';
+        data.content = 'is typing';
         addChatMessage(data);
     }
 
@@ -268,8 +268,8 @@ $(function() {
         addParticipantsMessage(data);
     });
 
-    // Whenever the server emits 'new message', update the chat body
-    socket.on('new message', (data) => {
+    // Whenever the server emits 'new_message', update the chat body
+    socket.on('new_message', (data) => {
         console.log("receiving: ", data);
         addChatMessage(data);
     });

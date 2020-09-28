@@ -3,14 +3,17 @@ import path from 'path';
 import http from 'http';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
-// import redisClient from './redis_client';
 import redisAdapter from 'socket.io-redis';
 import { Socket } from 'socket.io';
+import monogoose from 'mongoose';
+
+// routes
 import roomRoute from './routes/room';
 import userRoute from './routes/user';
 import messageRoute from './routes/message';
-import monogoose from 'mongoose';
 
+// models
+import Message from './models/message';
 
 // configs
 require('dotenv').config();
@@ -52,12 +55,29 @@ io.on('connection', (socket: Socket) => {
     var addedUser = false;
 
     // when the client emits 'new message', this listens and executes
-    socket.on('new message', (data) => {
-        const { sender, receiver } = data;
+    socket.on('new_message', (msg) => {
+        const { sender, receiver } = msg;
 
-        console.log(data);
-        io.to(sender).emit('new message', data);
-        io.to(receiver).emit('new message', data);
+        console.log(msg);
+        io.to(sender).emit('new_message', msg);
+        io.to(receiver).emit('new_message', msg);
+
+        if(msg.sender.localeCompare(msg.receiver) > 0)
+          var roomId: string = msg.receiver as string + '.' + msg.sender as string;
+        else
+            var roomId: string = msg.sender as string + '.' + msg.receiver as string; 
+
+        var message = new Message({
+            ...msg,
+            room_id: roomId,
+            type: 'SSB',
+            is_read: false
+        });
+        
+        message.save()
+        .catch((error: any) => {
+            console.log(error);
+        })
     });
 
     // when the client emits 'add user', this listens and executes
