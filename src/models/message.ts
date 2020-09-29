@@ -19,7 +19,7 @@ const messageSchema: Schema = new SchemaCreator({
      },
      room_id: String,
      type: String,
-     is_read: {
+     is_seen: {
           type: Boolean,
           default: false
      }

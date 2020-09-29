@@ -58,26 +58,75 @@ io.on('connection', (socket: Socket) => {
     // when the client emits 'new message', this listens and executes
     socket.on('new_message', (msg) => {
         const { sender, receiver } = msg;
+        msg._id = cuid();
 
         console.log(msg);
         io.to(sender).emit('new_message', msg);
         io.to(receiver).emit('new_message', msg);
 
         if(msg.sender.localeCompare(msg.receiver) > 0)
-            var roomId: string = msg.receiver as string + '.' + msg.sender as string;
+            var room_id: string = msg.receiver as string + '.' + msg.sender as string;
         else
-            var roomId: string = msg.sender as string + '.' + msg.receiver as string; 
+            var room_id: string = msg.sender as string + '.' + msg.receiver as string; 
 
         Message.create({
-            _id: cuid(),
             ...msg,
-            room_id: roomId,
+            room_id,
             type: 'SSB',
-            is_read: false
+            is_seen: false
         })
         .catch((error: any) => {
             console.log(error);
         });
+    });
+
+    // when the client emits 'typing', we broadcast it to others
+    socket.on('typing', async (data) => {
+        const { sender, receiver } = data;
+        console.log(data, " typing");
+
+        io.to(sender).emit('typing', data);
+        io.to(receiver).emit('typing', data);
+    });
+
+    // when the client emits 'stop_typing', we broadcast it to others
+    socket.on('stop_typing', async (data) => {
+        const { sender, receiver } = data;
+        console.log(data, " stop_typing");
+
+        io.to(sender).emit('stop_typing', data);
+        io.to(receiver).emit('stop_typing', data);
+    });
+
+    // the client have seen message
+    socket.on('seen_messages', (data) => {
+        console.log('seen messages:', data);
+        
+        if(data.sender.localeCompare(data.receiver) > 0)
+            data.room_id = data.receiver as string + '.' + data.sender as string;
+        else
+            data.room_id = data.sender as string + '.' + data.receiver as string; 
+        
+        socket.to(data.receiver).emit('seen_messages', data);
+        Message
+        .updateMany({_id: { $in: data.message_ids}}, {is_seen: true})
+        .catch(e => {
+            console.log(e);
+        });
+    });
+
+    // when the user disconnects.. perform this
+    socket.on('disconnect', () => {
+        if (addedUser) {
+            --numUsers;
+            console.log(socket['username'], ' disconnected!');
+
+            socket.leave(socket['username']);
+            socket.broadcast.emit('user left', {
+                username: socket['username'],
+                numUsers: numUsers
+            });
+        }
     });
 
     // when the client emits 'add user', this listens and executes
@@ -101,38 +150,6 @@ io.on('connection', (socket: Socket) => {
             username: socket['username'],
             numUsers: numUsers
         });
-    });
-
-    // when the client emits 'typing', we broadcast it to others
-    socket.on('typing', async (data) => {
-        const { sender, receiver } = data;
-        console.log(data, " typing");
-
-        io.to(sender).emit('typing', data);
-        io.to(receiver).emit('typing', data);
-    });
-
-    // when the client emits 'stop typing', we broadcast it to others
-    socket.on('stop typing', async (data) => {
-        const { sender, receiver } = data;
-        console.log(data, " stop typing");
-
-        io.to(sender).emit('stop typing', data);
-        io.to(receiver).emit('stop typing', data);
-    });
-
-    // when the user disconnects.. perform this
-    socket.on('disconnect', () => {
-        if (addedUser) {
-            --numUsers;
-            console.log(socket['username'], ' disconnected!');
-
-            socket.leave(socket['username']);
-            socket.broadcast.emit('user left', {
-                username: socket['username'],
-                numUsers: numUsers
-            });
-        }
     });
 })
 

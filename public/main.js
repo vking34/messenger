@@ -25,13 +25,14 @@ $(function() {
     var typing = false;
     var lastTypingTime;
     // var $currentInput = $senderId.focus();
+    var messages = [];
 
     var $receiver = $('.receiverId');
     var $sendBtn = $('#sendMsgBtn');
     $sendBtn.click(() => {
         console.log("sending...");
         sendMessage();
-        socket.emit('stop typing', {
+        socket.emit('stop_typing', {
             sender: username,
             receiver
         });
@@ -116,6 +117,11 @@ $(function() {
             .append($usernameDiv, $messageBodyDiv);
 
         addMessageElement($messageDiv, options);
+
+        if (data._id) {
+            messages.push(data);
+            console.log(messages);
+        }
     }
 
     // Adds the visual chat typing message
@@ -127,7 +133,7 @@ $(function() {
 
     // Removes the visual chat typing message
     const removeChatTyping = (data) => {
-        console.log("stop typing, ", data);
+        console.log("stop_typing, ", data);
         getTypingMessages(data).fadeOut(function() {
             $(this).remove();
         });
@@ -186,7 +192,7 @@ $(function() {
                 var typingTimer = (new Date()).getTime();
                 var timeDiff = typingTimer - lastTypingTime;
                 if (timeDiff >= TYPING_TIMER_LENGTH && typing) {
-                    socket.emit('stop typing', {
+                    socket.emit('stop_typing', {
                         sender: username,
                         receiver
                     });
@@ -227,7 +233,7 @@ $(function() {
             if (username) {
                 sendMessage();
                 var receiver = $receiver.val();
-                socket.emit('stop typing', {
+                socket.emit('stop_typing', {
                     sender: username,
                     receiver
                 });
@@ -252,6 +258,17 @@ $(function() {
     // Focus input when clicking on the message input's border
     $inputMessage.click(() => {
         $inputMessage.focus();
+        console.log('seen...');
+
+        var last_msg01 = messages[messages.length - 2];
+        var last_msg00 = messages[messages.length - 1];
+
+        if (last_msg00.sender !== username)
+            socket.emit('seen_messages', {
+                sender: username,
+                receiver,
+                message_ids: [last_msg01._id, last_msg00._id]
+            });
     });
 
     // Socket events
@@ -274,6 +291,11 @@ $(function() {
         addChatMessage(data);
     });
 
+    // On the other client have seen messages
+    socket.on('seen_messages', (data) => {
+        console.log(data);
+    })
+
     // Whenever the server emits 'user joined', log it in the chat body
     socket.on('user joined', (data) => {
         log(data.username + ' joined');
@@ -292,8 +314,8 @@ $(function() {
         addChatTyping(data);
     });
 
-    // Whenever the server emits 'stop typing', kill the typing message
-    socket.on('stop typing', (data) => {
+    // Whenever the server emits 'stop_typing', kill the typing message
+    socket.on('stop_typing', (data) => {
         removeChatTyping(data);
     });
 
