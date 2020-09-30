@@ -296,6 +296,7 @@ $(function() {
         if (last_msg00)
             if (last_msg00.from !== username)
                 socket.emit('seen_messages', {
+                    room_id: roomId,
                     from: username,
                     to: receiver,
                     message_ids: [last_msg00._id]

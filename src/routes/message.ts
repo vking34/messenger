@@ -7,18 +7,27 @@ const router: Router = express.Router();
 // Get messages
 router.get('/', async (req: Request, resp: Response) => {
      const params = req.query;
-     var {room_id, created_at, limit} = params;
+     var { room_id, created_at, limit, from } = params;
      var recordLimit = limit ? Number(limit) : 15;
 
-     const data = await MessageModel.find({
-          room_id
-     })
-     .sort({
-          created_at: created_at === '1' ? 1 : -1
-     })
-     .limit(recordLimit);
+     var findCondition: any = { room_id };
+     if (from) {
+          findCondition.created_at = { $lt: from.toString() }
+     }
+
+     const data = await MessageModel
+          .find(findCondition)
+          .sort({
+               created_at: created_at === '1' ? 1 : -1
+          })
+          .limit(recordLimit);
 
      resp.send({
+          room_id: room_id,
+          filters: {
+               message_count: data.length,
+               from: from ? from : new Date()
+          },
           data
      });
 })

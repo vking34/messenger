@@ -10,7 +10,7 @@ import cuid from 'cuid';
 
 // types
 import { RoomCreation } from './requests/room';
-import {MessageFormat} from './requests/message';
+import { MessageFormat } from './requests/message';
 
 // routes
 import roomRoute from './routes/room';
@@ -60,34 +60,23 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
     console.log('socket query:', socket.handshake.query);
 
     // check token
-    const { token } = socket.handshake.query;
-    console.log(token);
-    if (token !== 'access_token')
-        socket.disconnect();
+    // const { token } = socket.handshake.query;
+    // console.log(token);
+    // if (token !== 'access_token')
+    //     socket.disconnect();
+
+    // mark user id
+    socket['user_id'] = socket.handshake.query.user_id;
 
     // mark user role 
     socket['user_role'] = socket.handshake.query.user_role;
 
-    var addedUser = false;
-
     // create room
     socket.on('create_room', (room: RoomCreation) => {
-        room['_id'] = room.buyer + '.' + room.seller;
-
         console.log(room);
+        room['_id'] = room.buyer + '.' + room.seller;
+        socket['user_id'] = room.creator;
 
-        // check user role
-        // if (socket['user_role'] === UserRole.BUYER){
-        //     socket.join(room.buyer);
-        //     io.of(MESSENGER_NS).to(room.buyer).emit('create_room', room);
-        // }
-        // else {
-        //     socket.join(room.seller);
-        //     io.of(MESSENGER_NS).to(room.seller).emit('create_room', room);
-        // }
-
-
-        socket['username'] = room.creator;
         socket.join(room.creator);
         io.of(MESSENGER_NS).to(room.creator).emit('create_room', room);
 
@@ -97,7 +86,7 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
 
         // echo globally (all clients) that a person has connected
         socket.broadcast.emit('user joined', {
-            username: socket['username'],
+            username: socket['user_id'],
             numUsers: numUsers
         });
 
@@ -128,7 +117,7 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
             })
             .then(record => {
                 RoomModel
-                    .updateOne({_id: msg.room_id}, {last_message: record}, (_e, _r) => {});
+                    .updateOne({ _id: msg.room_id }, { last_message: record }, (_e, _r) => { });
             })
             .catch((error: any) => {
                 console.log(error);
@@ -137,17 +126,17 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
 
     // when the client emits 'typing', we broadcast it to others
     socket.on('typing', async (data) => {
-        const { from, to } = data;
         console.log("typing: ", data);
-
+        const { from, to } = data;
+        
         socket.to(from).emit('typing', data);
         socket.to(to).emit('typing', data);
     });
 
     // when the client emits 'stop_typing', we broadcast it to others
     socket.on('stop_typing', async (data) => {
-        const { from, to } = data;
         console.log("stop_typing: ", data);
+        const { from, to } = data;
 
         socket.to(from).emit('stop_typing', data);
         socket.to(to).emit('stop_typing', data);
@@ -156,13 +145,7 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
     // the client have seen message
     socket.on('seen_messages', (data) => {
         console.log('seen messages:', data);
-
-        if (data.from.localeCompare(data.to) > 0)
-            data.room_id = data.to as string + '.' + data.from as string;
-        else
-            data.room_id = data.from as string + '.' + data.to as string;
-
-
+        
         socket.to(data.to).emit('seen_messages', data);
         MessageModel
             .updateMany({ _id: { $in: data.message_ids } }, { is_seen: true })
@@ -173,26 +156,21 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
 
     // when the user disconnects.. perform this
     socket.on('disconnect', () => {
-        if (addedUser) {
-            console.log(socket['username'], ' disconnected!');
+        console.log(socket['user_id'], ' disconnected!');
 
-            socket.leave(socket['username']);
-            socket.broadcast.emit('user left', {
-                username: socket['username'],
-                numUsers: numUsers
-            });
-        }
+        socket.leave(socket['user_id']);
+        socket.broadcast.emit('user left', {
+            username: socket['user_id'],
+            numUsers: numUsers
+        });
     });
 
     // when the client emits 'add user', this listens and executes
     socket.on('set usernames', (data) => {
-        if (addedUser) return;
-
         const { from } = data;
         // store the username in the socket session for this client
-        socket['username'] = from;
+        socket['user_id'] = from;
         ++numUsers;
-        addedUser = true;
 
         socket.join(from);
 
@@ -202,7 +180,7 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
 
         // echo globally (all clients) that a person has connected
         socket.broadcast.emit('user joined', {
-            username: socket['username'],
+            username: socket['user_id'],
             numUsers: numUsers
         });
     });
