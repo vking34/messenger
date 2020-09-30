@@ -2,15 +2,28 @@ import express, { Request, Response, Router } from 'express';
 import { MessageModel } from '../models/message';
 import cuid from 'cuid';
 
-
 const router: Router = express.Router();
 
-// get messages
-router.get('/', (_req: Request, resp: Response) => {
-     resp.send('users');
+// Get messages
+router.get('/', async (req: Request, resp: Response) => {
+     const params = req.query;
+     var {room_id, created_at, limit} = params;
+     var recordLimit = limit ? Number(limit) : 15;
+
+     const data = await MessageModel.find({
+          room_id
+     })
+     .sort({
+          created_at: created_at === '1' ? 1 : -1
+     })
+     .limit(recordLimit);
+
+     resp.send({
+          data
+     });
 })
 
-// create message
+// Create message
 router.post('/', (req: Request, resp: Response) => {
      console.log('save message... ');
      const msg = req.body;

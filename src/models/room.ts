@@ -9,6 +9,7 @@ const RoomSchema: Schema = new mongoose.Schema(
                required: [true, 'Room ID is required!']
           },
           type: String,
+          creator: String,
           buyer: String,
           seller: String,
           last_message: MessageSchema 

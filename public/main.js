@@ -21,6 +21,8 @@ $(function() {
     // Prompt for setting a username
     var username;
     var receiver;
+    var userRole;
+    var roomId;
     var connected = false;
     var typing = false;
     var lastTypingTime;
@@ -74,10 +76,14 @@ $(function() {
         }
         const data = {
             type: 'BS',
+            creator: username,
             buyer,
             seller,
             role
         };
+
+        roomId = buyer + '.' + seller;
+
         console.log(data);
         // If the username is valid
         if (username) {
@@ -99,8 +105,10 @@ $(function() {
         if (message && connected) {
             $inputMessage.val('');
             const data = {
+                room_id: roomId,
                 from: username,
                 to: receiver,
+                type: 'TEXT',
                 content: message
             };
             console.log(data);

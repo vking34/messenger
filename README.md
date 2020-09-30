@@ -1,4 +1,4 @@
-# Messenger
+# CZ Messenger
 
 ## Techstack
 - Nodejs: Runtime Environment
@@ -9,7 +9,13 @@
 
 ## Namespace: /messenger
 
-## Message Types:
+## Room:
+1. Room type:
+     - ```BS```: Buyer.Seller
+     - ...
 
-<!-- 1. ```BS```: Seller -> Buyer
-2. ```SB```: Seller -> Buyer -->
+2. Room ID: BuyerID.SellerID
+
+3. Buyer: BuyerID
+4. Seller: SellerID
+

@@ -1,4 +1,5 @@
 export const enum MessageType {
      TEXT = 'TEXT',
-     IMAGE = 'IMAGE'
+     IMAGE = 'IMAGE',
+     EMOJI = 'EMOJI'
 }

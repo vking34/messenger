@@ -10,6 +10,7 @@ import cuid from 'cuid';
 
 // types
 import { RoomCreation } from './requests/room';
+import {MessageFormat} from './requests/message';
 
 // routes
 import roomRoute from './routes/room';
@@ -18,7 +19,6 @@ import messageRoute from './routes/message';
 // models
 import { MessageModel } from './models/message';
 import RoomModel from './models/room';
-import { UserRole } from './constants/user';
 
 // configs
 require('dotenv').config();
@@ -73,9 +73,9 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
     // create room
     socket.on('create_room', (room: RoomCreation) => {
         room['_id'] = room.buyer + '.' + room.seller;
-        
+
         console.log(room);
-        
+
         // check user role
         // if (socket['user_role'] === UserRole.BUYER){
         //     socket.join(room.buyer);
@@ -86,18 +86,10 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
         //     io.of(MESSENGER_NS).to(room.seller).emit('create_room', room);
         // }
 
-        if (room.role === UserRole.BUYER){
-            console.log('BUYER');
-            socket['username'] = room.buyer;
-            socket.join(room.buyer);
-            io.of(MESSENGER_NS).to(room.buyer).emit('create_room', room);
-        }
-        else {
-            console.log('SELLER');
-            socket.join(room.seller);
-            socket['username'] = room.seller;
-            io.of(MESSENGER_NS).to(room.seller).emit('create_room', room);
-        }
+
+        socket['username'] = room.creator;
+        socket.join(room.creator);
+        io.of(MESSENGER_NS).to(room.creator).emit('create_room', room);
 
         socket.emit('login', {
             numUsers: numUsers
@@ -120,7 +112,7 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
     })
 
     // when the client emits 'new message', this listens and executes
-    socket.on('new_message', (msg) => {
+    socket.on('new_message', (msg: MessageFormat) => {
         const { from, to } = msg;
         msg._id = cuid();   // generate message id
 
@@ -129,16 +121,15 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
         io.of('/messenger').to(from).emit('new_message', msg);
         io.of('/messenger').to(to).emit('new_message', msg);
 
-        if (msg.from.localeCompare(msg.to) > 0)
-            var room_id: string = msg.to + '.' + msg.from;
-        else
-            var room_id: string = msg.from + '.' + msg.to;
-
-        MessageModel.create({
-            ...msg,
-            room_id,
-            is_seen: false
-        })
+        MessageModel
+            .create({
+                ...msg,
+                is_seen: false
+            })
+            .then(record => {
+                RoomModel
+                    .updateOne({_id: msg.room_id}, {last_message: record}, (_e, _r) => {});
+            })
             .catch((error: any) => {
                 console.log(error);
             });
