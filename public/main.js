@@ -9,9 +9,9 @@ $(function() {
 
     // Initialize variables
     var $window = $(window);
-    var $senderId = $('#senderId'); // Input for sender ID
+    var $fromId = $('#senderId'); // Input for from ID
     var $receiverId = $('#receiverId');
-
+    var $userRole = $('#userRole');
     var $messages = $('.messages'); // Messages area
     var $inputMessage = $('.inputMessage'); // Input message input box
 
@@ -24,22 +24,18 @@ $(function() {
     var connected = false;
     var typing = false;
     var lastTypingTime;
-    // var $currentInput = $senderId.focus();
+    // var $currentInput = $fromId.focus();
     var messages = [];
 
     var $receiver = $('.receiverId');
     var $sendBtn = $('#sendMsgBtn');
-    $sendBtn.click(() => {
-        console.log("sending...");
-        sendMessage();
-        socket.emit('stop_typing', {
-            sender: username,
-            receiver
-        });
-        typing = false;
-    })
 
-    var socket = io();
+    var socket = io('/messenger', {
+        query: {
+            token: 'access_token',
+            user_role: 'BUYER'
+        }
+    });
 
     const addParticipantsMessage = (data) => {
         var message = '';
@@ -51,11 +47,37 @@ $(function() {
         log(message);
     }
 
+    $sendBtn.click(() => {
+        console.log("sending...");
+        sendMessage();
+        socket.emit('stop_typing', {
+            from: username,
+            to: receiver
+        });
+        typing = false;
+    })
+
     // Sets the client's username
-    const setUsernames = () => {
-        username = cleanInput($senderId.val().trim());
+    const createRoom = () => {
+        username = cleanInput($fromId.val().trim());
         receiver = cleanInput($receiverId.val().trim());
-        const data = { sender: username, receiver };
+        userRole = cleanInput($userRole.val().trim());
+
+        if (userRole === 'b') {
+            var buyer = username;
+            var seller = receiver;
+            var role = 'BUYER';
+        } else {
+            var buyer = receiver;
+            var seller = username;
+            var role = 'SELLER';
+        }
+        const data = {
+            type: 'BS',
+            buyer,
+            seller,
+            role
+        };
         console.log(data);
         // If the username is valid
         if (username) {
@@ -64,7 +86,7 @@ $(function() {
             $loginPage.off('click');
 
             // Tell the server your username
-            socket.emit('set usernames', data);
+            socket.emit('create_room', data);
         }
     }
 
@@ -77,8 +99,8 @@ $(function() {
         if (message && connected) {
             $inputMessage.val('');
             const data = {
-                sender: username,
-                receiver: receiver,
+                from: username,
+                to: receiver,
                 content: message
             };
             console.log(data);
@@ -105,14 +127,14 @@ $(function() {
         }
 
         var $usernameDiv = $('<span class="username"/>')
-            .text(data.sender)
-            .css('color', getUsernameColor(data.sender));
+            .text(data.from)
+            .css('color', getUsernameColor(data.from));
         var $messageBodyDiv = $('<span class="messageBody">')
             .text(data.content);
 
         var typingClass = data.typing ? 'typing' : '';
         var $messageDiv = $('<li class="message"/>')
-            .data('username', data.sender)
+            .data('username', data.from)
             .addClass(typingClass)
             .append($usernameDiv, $messageBodyDiv);
 
@@ -120,7 +142,7 @@ $(function() {
 
         if (data._id) {
             messages.push(data);
-            console.log(messages);
+            console.log("message store: ", messages);
         }
     }
 
@@ -133,7 +155,7 @@ $(function() {
 
     // Removes the visual chat typing message
     const removeChatTyping = (data) => {
-        console.log("stop_typing, ", data);
+        console.log("stop_typing: ", data);
         getTypingMessages(data).fadeOut(function() {
             $(this).remove();
         });
@@ -182,8 +204,8 @@ $(function() {
                 typing = true;
 
                 socket.emit('typing', {
-                    sender: username,
-                    receiver
+                    from: username,
+                    to: receiver
                 });
             }
             lastTypingTime = (new Date()).getTime();
@@ -193,8 +215,8 @@ $(function() {
                 var timeDiff = typingTimer - lastTypingTime;
                 if (timeDiff >= TYPING_TIMER_LENGTH && typing) {
                     socket.emit('stop_typing', {
-                        sender: username,
-                        receiver
+                        from: username,
+                        to: receiver
                     });
                     typing = false;
                 }
@@ -205,7 +227,7 @@ $(function() {
     // Gets the 'X is typing' messages of a user
     const getTypingMessages = (data) => {
         return $('.typing.message').filter(function(i) {
-            return $(this).data('username') === data.sender;
+            return $(this).data('username') === data.from;
         });
     }
 
@@ -234,12 +256,12 @@ $(function() {
                 sendMessage();
                 var receiver = $receiver.val();
                 socket.emit('stop_typing', {
-                    sender: username,
-                    receiver
+                    from: username,
+                    to: receiver
                 });
                 typing = false;
             } else {
-                setUsernames();
+                createRoom();
             }
         }
     });
@@ -260,25 +282,31 @@ $(function() {
         $inputMessage.focus();
         console.log('seen...');
 
-        var last_msg01 = messages[messages.length - 2];
+        // all unseen messages
         var last_msg00 = messages[messages.length - 1];
 
-        if (last_msg00.sender !== username)
-            socket.emit('seen_messages', {
-                sender: username,
-                receiver,
-                message_ids: [last_msg01._id, last_msg00._id]
-            });
+        if (last_msg00)
+            if (last_msg00.from !== username)
+                socket.emit('seen_messages', {
+                    from: username,
+                    to: receiver,
+                    message_ids: [last_msg00._id]
+                });
     });
 
     // Socket events
+
+    // on create room
+    socket.on('create_room', data => {
+        console.log(data);
+    });
 
     // Whenever the server emits 'login', log the login message
     socket.on('login', (data) => {
         console.log('logged in!');
         connected = true;
         // Display the welcome message
-        var message = "Sender: " + username + ", Receiver: " + receiver;
+        var message = "from: " + username + ", Receiver: " + receiver;
         log(message, {
             prepend: true
         });
@@ -320,13 +348,14 @@ $(function() {
     });
 
     socket.on('disconnect', () => {
+        console.log('disconnected!');
         log('you have been disconnected');
     });
 
     socket.on('reconnect', () => {
         log('you have been reconnected');
         if (username) {
-            socket.emit('set usernames', { sender: username, receiver });
+            socket.emit('set usernames', { from: username, to: receiver });
         }
     });
 
