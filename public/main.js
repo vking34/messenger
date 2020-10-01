@@ -307,19 +307,16 @@ $(function() {
 
     // on create room
     socket.on('create_room', data => {
-        console.log(data);
-    });
-
-    // Whenever the server emits 'login', log the login message
-    socket.on('login', (data) => {
-        console.log('logged in!');
+        console.log('created room: ', data);
         connected = true;
+
         // Display the welcome message
-        var message = "from: " + username + ", Receiver: " + receiver;
+        const { buyer, seller } = data.room;
+        var message = "buyer: " + buyer + ", seller: " + seller;
         log(message, {
             prepend: true
         });
-        addParticipantsMessage(data);
+        addParticipantsMessage({ numUsers: 1 });
     });
 
     // Whenever the server emits 'new_message', update the chat body

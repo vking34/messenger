@@ -78,17 +78,13 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
         socket['user_id'] = room.creator;
 
         socket.join(room.creator);
-        io.of(MESSENGER_NS).to(room.creator).emit('create_room', room);
+        io.of(MESSENGER_NS).to(room.creator).emit('create_room', {status: true, room});
 
-        socket.emit('login', {
-            numUsers: numUsers
-        });
-
-        // echo globally (all clients) that a person has connected
-        socket.broadcast.emit('user joined', {
-            username: socket['user_id'],
-            numUsers: numUsers
-        });
+        // // echo globally (all clients) that a person has connected
+        // socket.broadcast.emit('user joined', {
+        //     username: socket['user_id'],
+        //     numUsers: numUsers
+        // });
 
         RoomModel.findById(room['_id'], (_e, record) => {
             if (!record)
@@ -152,6 +148,14 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
             .catch(e => {
                 console.log(e);
             });
+        
+        // RoomModel.findById(data.room_id, (_e, room) => {
+        //     console.log(room.last_message);
+            
+        //     if(room.last_message._id === message_ids[0]){
+
+        //     }
+        // })
     });
 
     // when the user disconnects.. perform this
