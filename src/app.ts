@@ -73,7 +73,7 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
 
     // create room
     socket.on('create_room', (room: RoomCreation) => {
-        console.log(room);
+        // console.log(room);
         room['_id'] = room.buyer + '.' + room.seller;
         socket['user_id'] = room.creator;
 
@@ -90,9 +90,7 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
             if (!record)
                 RoomModel
                     .create(room)
-                    .catch(e => {
-                        console.log(e);
-                    });
+                    .catch(_e => {});
         });
     })
 
@@ -101,7 +99,7 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
         const { from, to } = msg;
         msg._id = cuid();   // generate message id
 
-        console.log('new message:', msg);
+        // console.log('new message:', msg);
 
         io.of('/messenger').to(from).emit('new_message', msg);
         io.of('/messenger').to(to).emit('new_message', msg);
@@ -115,14 +113,12 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
                 RoomModel
                     .updateOne({ _id: msg.room_id }, { last_message: record }, (_e, _r) => { });
             })
-            .catch((error: any) => {
-                console.log(error);
-            });
+            .catch((_e) => {});
     });
 
     // when the client emits 'typing', we broadcast it to others
     socket.on('typing', async (data) => {
-        console.log("typing: ", data);
+        // console.log("typing: ", data);
         const { from, to } = data;
         
         socket.to(from).emit('typing', data);
@@ -131,7 +127,7 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
 
     // when the client emits 'stop_typing', we broadcast it to others
     socket.on('stop_typing', async (data) => {
-        console.log("stop_typing: ", data);
+        // console.log("stop_typing: ", data);
         const { from, to } = data;
 
         socket.to(from).emit('stop_typing', data);
@@ -140,7 +136,7 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
 
     // the client have seen message
     socket.on('seen_messages', async (data) => {
-        console.log('seen messages:', data);
+        // console.log('seen messages:', data);
         const {room_id} = data;
         
         socket.to(data.to).emit('seen_messages', data);
@@ -164,7 +160,7 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
 
     // when the user disconnects.. perform this
     socket.on('disconnect', () => {
-        console.log(socket['user_id'], ' disconnected!');
+        // console.log(socket['user_id'], 'disconnected!');
 
         socket.leave(socket['user_id']);
         socket.broadcast.emit('user left', {
