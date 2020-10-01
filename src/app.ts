@@ -139,8 +139,9 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
     });
 
     // the client have seen message
-    socket.on('seen_messages', (data) => {
+    socket.on('seen_messages', async (data) => {
         console.log('seen messages:', data);
+        const {room_id} = data;
         
         socket.to(data.to).emit('seen_messages', data);
         MessageModel
@@ -149,6 +150,22 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
                 console.log(e);
             });
         
+        var room: any = await RoomModel.findById(data.room_id);
+        
+        console.log(room);
+        console.log(room.last_message._id, data.message_ids[0]);
+        
+        if (room.last_message._id === data.message_ids[0]){
+            room.last_message.is_seen = true;
+            console.log('update last message: ', room.last_message);
+            
+            RoomModel
+            .updateOne(
+                {_id: room_id},
+                {last_message: room.last_message})
+            .catch(e => {console.log(e);});
+        }
+
         // RoomModel.findById(data.room_id, (_e, room) => {
         //     console.log(room.last_message);
             

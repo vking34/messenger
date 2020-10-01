@@ -4,7 +4,7 @@
     "description": "",
     "main": "dist/app.js",
     "scripts": {
-        "start": "tsc && nodemon dist/app.js",
+        "start": "tsc && node dist/app.js",
         "dev": "nodemon src/app.ts",
         "build": "tsc -p .",
         "test": "echo \"Error: no test specified\" && exit 1"
