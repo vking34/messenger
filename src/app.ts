@@ -7,6 +7,7 @@ import redisAdapter from 'socket.io-redis';
 import { Server, Socket } from 'socket.io';
 import monogoose from 'mongoose';
 import cuid from 'cuid';
+import cors from 'cors';
 
 // types
 import { RoomCreation } from './requests/room';
@@ -43,6 +44,7 @@ io.adapter(redisAdapter({ host: process.env.REDIS_HOST, port: process.env.REDIS_
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(morgan('dev'));
 app.use(bodyParser.json());
+app.use(cors());
 
 // routes
 app.use('/v1/rooms', roomRoute);
