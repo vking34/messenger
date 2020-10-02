@@ -25,9 +25,11 @@
      var socket = io('/messenger', {
      query: {
           token: 'access_token',
+          user_id: 'user_id',
           user_role: 'BUYER'
      }});
      ```
+
 2. Events:
      - ```create_room```:
           - client:

@@ -1,6 +1,7 @@
 import {RoomType} from '../constants/room';
 
 interface RoomCreation {
+     _id: string,
      type: RoomType,
      seller: string,
      buyer: string,

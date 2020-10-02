@@ -57,40 +57,36 @@ server.listen(port, () => {
 // socket events
 var numUsers: number = 0;
 io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
-    console.log('socket query:', socket.handshake.query);
+    console.log('socket query: ', socket.handshake.query);
+    const { token, user_id, user_role } = socket.handshake.query;
 
     // check token
-    // const { token } = socket.handshake.query;
-    // console.log(token);
+    console.log(token);
     // if (token !== 'access_token')
     //     socket.disconnect();
 
-    // mark user id
-    socket['user_id'] = socket.handshake.query.user_id;
+    // mark user id and join the own room
+    socket['user_id'] = user_id;
+    socket.join(user_id);
 
     // mark user role 
-    socket['user_role'] = socket.handshake.query.user_role;
+    socket['user_role'] = user_role;
 
     // create room
     socket.on('create_room', (room: RoomCreation) => {
         // console.log(room);
-        room['_id'] = room.buyer + '.' + room.seller;
+        room._id = room.buyer + '.' + room.seller;
+
+        // test
         socket['user_id'] = room.creator;
-
         socket.join(room.creator);
-        io.of(MESSENGER_NS).to(room.creator).emit('create_room', {status: true, room});
+        //
 
-        // // echo globally (all clients) that a person has connected
-        // socket.broadcast.emit('user joined', {
-        //     username: socket['user_id'],
-        //     numUsers: numUsers
-        // });
+        io.of(MESSENGER_NS).to(room.creator).emit('create_room', room);
 
         RoomModel.findById(room['_id'], (_e, record) => {
             if (!record)
-                RoomModel
-                    .create(room)
-                    .catch(_e => {});
+                RoomModel.create(room).catch(_e => { });
         });
     })
 
@@ -98,8 +94,6 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
     socket.on('new_message', (msg: MessageFormat) => {
         const { from, to } = msg;
         msg._id = cuid();   // generate message id
-
-        // console.log('new message:', msg);
 
         io.of('/messenger').to(from).emit('new_message', msg);
         io.of('/messenger').to(to).emit('new_message', msg);
@@ -113,14 +107,14 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
                 RoomModel
                     .updateOne({ _id: msg.room_id }, { last_message: record }, (_e, _r) => { });
             })
-            .catch((_e) => {});
+            .catch((_e) => { });
     });
 
     // when the client emits 'typing', we broadcast it to others
     socket.on('typing', async (data) => {
         // console.log("typing: ", data);
         const { from, to } = data;
-        
+
         socket.to(from).emit('typing', data);
         socket.to(to).emit('typing', data);
     });
@@ -137,24 +131,24 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
     // the client have seen message
     socket.on('seen_messages', async (data) => {
         // console.log('seen messages:', data);
-        const {room_id} = data;
-        
+        const { room_id } = data;
+
         socket.to(data.to).emit('seen_messages', data);
 
         // update messages in the message collection
         MessageModel
             .updateMany({ _id: { $in: data.message_ids } }, { is_seen: true })
-            .catch(_e => {});
-        
+            .catch(_e => { });
+
         // update the last message in the room
         var room: any = await RoomModel.findById(data.room_id);
-        if (room.last_message._id === data.message_ids[0]){
+        if (room.last_message._id === data.message_ids[0]) {
             room.last_message.is_seen = true;
             RoomModel
-            .updateOne(
-                {_id: room_id},
-                {last_message: room.last_message})
-            .catch(_e => {});
+                .updateOne(
+                    { _id: room_id },
+                    { last_message: room.last_message })
+                .catch(_e => { });
         }
     });
 

@@ -10,7 +10,7 @@ const router: Router = express.Router();
 router.get('', async (req: Request, resp: Response) => {
      var { user_id, role } = req.query;
      var rooms;
-     const sortOptions = {'last_message.created_at': -1};
+     const sortOptions = { 'last_message.created_at': -1 };
 
      if (role === UserRole.BUYER)
           rooms = await RoomModel.find({ buyer: user_id }).sort(sortOptions);
@@ -26,21 +26,26 @@ router.get('', async (req: Request, resp: Response) => {
 
 
 // create room
-router.post('/', (req: Request, resp: Response) => {
+router.post('/', async (req: Request, resp: Response) => {
      const room: RoomCreation = req.body;
-     var roomId = room.buyer + '.' + room.seller;
+     room._id = room.buyer + '.' + room.seller;
 
-     RoomModel.create({
-          _id: roomId,
-          ...room
+     RoomModel.findById(room._id, (_e, record) => {
+          if (!record) {
+               RoomModel.create(room).catch(_e => { });
+               resp.send({
+                    status: true,
+                    message: 'Created room successfully!',
+                    room
+               });
+          }
+          else 
+               resp.send({
+                    status: false,
+                    message: 'The room is existing!'
+               });
+          
      })
-          .then(room => {
-               console.log(room);
-               resp.send(room);
-          })
-          .catch(e => {
-               resp.send(e).status(500);
-          })
 });
 
 
