@@ -1,61 +1,28 @@
 import express, { Response, Request, Router } from 'express';
 import { RoomCreation } from '../requests/room';
 import RoomModel from '../models/room';
+import { UserRole } from '../constants/user';
 
 
 const router: Router = express.Router();
 
 // get chat rooms
-router.get('', (req: Request, resp: Response) => {
+router.get('', async (req: Request, resp: Response) => {
      var { user_id, role } = req.query;
+     var rooms;
+     const sortOptions = {'last_message.created_at': -1};
 
-     console.log(user_id, role);
-
-     if (role === 'BUYER')
-          RoomModel.find(
-               {
-                    buyer: user_id
-               },
-               (_e, rooms) => {
-                    resp.send({
-                         user_id,
-                         role,
-                         rooms
-                    });
-               })
-               .catch((e) => {
-                    const rooms = [];
-                    resp.send({
-                         user_id,
-                         role,
-                         rooms,
-                         message: e
-                    });
-               });
-
+     if (role === UserRole.BUYER)
+          rooms = await RoomModel.find({ buyer: user_id }).sort(sortOptions);
      else
-          RoomModel.find(
-               {
-                    seller: user_id
-               },
-               (_e, rooms) => {
-                    resp.send({
-                         user_id,
-                         role,
-                         rooms
-                    });
-               })
-               .catch((e) => {
-                    const rooms = [];
-                    resp.send({
-                         user_id,
-                         role,
-                         rooms,
-                         message: e
-                    });
-               });
-})
+          rooms = await RoomModel.find({ seller: user_id }).sort(sortOptions);
 
+     resp.send({
+          user_id,
+          role,
+          rooms
+     });
+})
 
 
 // create room
