@@ -53,24 +53,30 @@ server.listen(port, () => {
     console.log('Server listening at port %d', port);
 });
 
+// socket middleware
+io.use((socket, next) => {
+    console.log('socket query: ', socket.handshake.query);
+    let { token, user_id, user_role } = socket.handshake.query;
+
+    // check token
+    if (token) {
+        // mark user id and join the own room
+        socket['user_id'] = user_id;
+        socket.join(user_id);
+
+        // mark user role 
+        socket['user_role'] = user_role;
+
+        return next();
+    }
+    else {
+        return next(new Error('Authentication Error'));
+    }
+});
 
 // socket events
 var numUsers: number = 0;
 io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
-    console.log('socket query: ', socket.handshake.query);
-    const { token, user_id, user_role } = socket.handshake.query;
-
-    // check token
-    console.log(token);
-    // if (token !== 'access_token')
-    //     socket.disconnect();
-
-    // mark user id and join the own room
-    socket['user_id'] = user_id;
-    socket.join(user_id);
-
-    // mark user role 
-    socket['user_role'] = user_role;
 
     // create room
     socket.on('create_room', (room: RoomCreation) => {
