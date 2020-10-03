@@ -9,8 +9,8 @@ router.get('/', async (req: Request, resp: Response) => {
      const params = req.query;
      var { room_id, created_at, limit, from } = params;
      var recordLimit = limit ? Number(limit) : 15;
-
      var condition: any = { room_id };
+     
      if (from) {
           condition.created_at = { $lt: from.toString() }
      }

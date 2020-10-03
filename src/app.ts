@@ -20,8 +20,6 @@ const app = express();
 export const server = http.createServer(app);
 
 
-
-
 // db
 monogoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 monogoose.Promise = global.Promise;

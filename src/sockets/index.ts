@@ -14,11 +14,10 @@ import handleSeenMessageEvent from './seenMessageEvent';
 import handleSetUser from './setUserEvent';
 
 
-console.log("===========process.env.REDIS_ADDRESS1: " + process.env.REDIS_ADDRESS)
-
 // init socket server
 const io: Server = require('socket.io')(server);
-io.adapter(redisAdapter({ uri: 'redis://172.26.11.117:6379' }));
+io.adapter(redisAdapter(process.env.REDIS_ADDRESS));
+
 
 // socket middleware
 io.use((socket: Socket, next) => {
