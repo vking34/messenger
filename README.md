@@ -31,6 +31,20 @@
      ```
 
 2. Events:
+     - ```reconnect```:
+          - client: emit event ```verify_user```:
+               - ```token```
+               - ```user_id```
+               - ```user_role```: BUYER / SELLER
+
+     - ```verify_user```:
+          - client:
+               - ```token```
+               - ```user_id```
+               - ```user_role```: BUYER / SELLER
+          - server:
+               - ```status```: boolean
+
      - ```create_room```:
           - client:
                - ```type```: Room type. Value: BS

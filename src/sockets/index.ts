@@ -11,14 +11,14 @@ import handleNewRoomEvent from './newRoomEvent';
 import handleTypingEvent from './typingEvent';
 import handleStopTypingEvent from './stopTypingEvent';
 import handleSeenMessageEvent from './seenMessageEvent';
-import handleSetUser from './setUserEvent';
+import handleVerifyUser from './verifyUserEvent';
 
 
 // init socket server
 const io: Server = require('socket.io')(server);
 io.adapter(redisAdapter({ uri: process.env.REDIS_ADDRESS }));
 
-// socket middleware
+// socket middlewares
 io.use((socket: Socket, next) => {
     console.log('socket query: ', socket.handshake.query);
     let { token, user_id, user_role } = socket.handshake.query;
@@ -63,6 +63,6 @@ export default io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
     // event: 'disconnect'
     disconnectEvent(io, socket);
 
-    // when the client emits 'add user', this listens and executes
-    handleSetUser(io, socket);
-})
+    // event: 'verify_user' - when user reconnect, we must verify again
+    handleVerifyUser(io, socket);
+});
