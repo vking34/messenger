@@ -10,15 +10,15 @@ router.get('/', async (req: Request, resp: Response) => {
      var { room_id, created_at, limit, from } = params;
      var recordLimit = limit ? Number(limit) : 15;
 
-     var findCondition: any = { room_id };
+     var condition: any = { room_id };
      if (from) {
-          findCondition.created_at = { $lt: from.toString() }
+          condition.created_at = { $lt: from.toString() }
      }
 
      const data = await MessageModel
-          .find(findCondition)
-          .sort({ created_at: created_at === '1' ? 1 : -1 })
-          .limit(recordLimit);
+          .find(condition)
+          .limit(recordLimit)
+          .sort({ created_at: created_at === '-1' ? -1 : 1 });
 
      resp.send({
           room_id: room_id,
