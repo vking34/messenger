@@ -2,6 +2,7 @@ import { Schema } from "mongoose";
 import mongoose from './index';
 import { MessageSchema } from './message';
 
+
 const RoomSchema: Schema = new mongoose.Schema(
      {
           _id: {
@@ -13,7 +14,12 @@ const RoomSchema: Schema = new mongoose.Schema(
           buyer: String,
           seller: String,
           last_message: MessageSchema,
-          shop: Object
+          shop: Object,
+          buyer_info: {
+             name: String,
+             phone_number: String,
+             email: String  
+          }
      },
      {
           timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }

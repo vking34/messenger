@@ -12,13 +12,21 @@ const router: Router = express.Router();
 // get chat rooms
 router.get('', async (req: Request, resp: Response) => {
      var { user_id, role } = req.query;
-     var rooms;
+     var rooms, condition, projection;
      const sortOptions = { 'last_message.created_at': -1 };
 
-     if (role === UserRole.BUYER)
-          rooms = await RoomModel.find({ buyer: user_id }).sort(sortOptions);
-     else
-          rooms = await RoomModel.find({ seller: user_id }).sort(sortOptions);
+     if (role === UserRole.BUYER) {
+          condition = { buyer: user_id };
+          projection = { buyer_info: 0 };
+
+          rooms = await RoomModel.find(condition, projection).sort(sortOptions);
+     }
+     else {
+          condition = { seller: user_id };
+          projection = { shop: 0 };
+
+          rooms = await RoomModel.find(condition, projection).sort(sortOptions);
+     }
 
      resp.send({
           user_id,
@@ -36,7 +44,8 @@ router.post('/', async (req: Request, resp: Response) => {
 
      RoomModel.findById(room._id, async (_e, record) => {
           if (!record) {
-               
+               // need to check user_id in shop same to seller_id 
+
                resp.send({
                     status: true,
                     message: 'Created room successfully!',
@@ -47,12 +56,12 @@ router.post('/', async (req: Request, resp: Response) => {
                room.shop = shopResponse.data;
                RoomModel.create(room).catch(_e => { });
           }
-          else 
+          else
                resp.send({
                     status: false,
                     message: 'The room is existing!'
                });
-          
+
      })
 });
 

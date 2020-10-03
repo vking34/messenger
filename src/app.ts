@@ -28,7 +28,7 @@ const port = process.env.PORT || 3000;
 const app = express();
 const server = http.createServer(app);
 const MESSENGER_NS = process.env.MESSENGER_NAMESPACE;
-import {SHOP_SERVICE} from './routes/room';
+import { SHOP_SERVICE } from './routes/room';
 
 // db
 monogoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -95,13 +95,14 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
         io.of(MESSENGER_NS).to(room.creator).emit('create_room', room);
 
         RoomModel.findById(room['_id'], async (_e, record) => {
-            if (!record){
+            if (!record) {
                 let shopResponse = await axios.get(SHOP_SERVICE + room.shop_id);
                 room.shop = shopResponse.data;
+                // need to check user_id in shop same to seller_id 
                 RoomModel.create(room).catch(_e => { });
             }
         });
-    })
+    });
 
     // when the client emits 'new message', this listens and executes
     socket.on('new_message', (msg: MessageFormat) => {
