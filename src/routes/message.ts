@@ -18,7 +18,7 @@ router.get('/', async (req: Request, resp: Response) => {
      const data = await MessageModel
           .find(condition)
           .limit(recordLimit)
-          .sort({ created_at: created_at === '-1' ? -1 : 1 });
+          .sort({ created_at: created_at === '1' ? 1 : -1 });
 
      resp.send({
           room_id: room_id,

@@ -27,6 +27,8 @@ io.use((socket: Socket, next) => {
     if (token) {
         // mark user id and join the own room
         socket['user_id'] = user_id;
+        console.log('user:', socket['user_id'], 'connected.');
+        
         socket.join(user_id);
 
         // mark user role 

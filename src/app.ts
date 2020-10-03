@@ -3,16 +3,12 @@ import path from 'path';
 import http from 'http';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
-// import redisAdapter from 'socket.io-redis';
 import monogoose from 'mongoose';
-// import cuid from 'cuid';
 import cors from 'cors';
-
 
 // routes
 import roomRoute from './routes/room';
 import messageRoute from './routes/message';
-
 
 // configs
 // require('dotenv').config();

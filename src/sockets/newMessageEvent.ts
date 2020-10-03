@@ -9,10 +9,10 @@ import RoomModel from '../models/room';
 
 export default (io: Server, socket: Socket) => {
      socket.on('new_message', (msg: MessageFormat) => {
-          // console.log(msg);
+          console.log(msg);
           const { from, to } = msg;
           msg._id = cuid();   // generate message id
-
+          
           io.of('/messenger').to(from).emit('new_message', msg);
           io.of('/messenger').to(to).emit('new_message', msg);
 
