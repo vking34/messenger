@@ -18,6 +18,7 @@ import handleVerifyUser from './verifyUserEvent';
 const io: Server = require('socket.io')(server);
 io.adapter(redisAdapter({ uri: process.env.REDIS_ADDRESS }));
 
+
 // socket middlewares
 io.use((socket: Socket, next) => {
     console.log('socket query: ', socket.handshake.query);
