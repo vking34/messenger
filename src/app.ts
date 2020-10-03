@@ -14,11 +14,15 @@ import roomRoute from './routes/room';
 import messageRoute from './routes/message';
 
 
+console.log("===========process.env.REDIS_ADDRESS: " + process.env.REDIS_ADDRESS)
+
 // configs
 // require('dotenv').config();
 const port = process.env.PORT || 3000;
 const app = express();
 export const server = http.createServer(app);
+
+
 
 
 // db
