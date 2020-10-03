@@ -79,7 +79,9 @@ $(function() {
             creator: username,
             buyer,
             seller,
-            role
+            buyer_info: {
+                name: 'Le Vuong'
+            }
         };
 
         roomId = buyer + '.' + seller;
@@ -306,12 +308,12 @@ $(function() {
     // Socket events
 
     // on create room
-    socket.on('create_room', data => {
-        console.log('created room: ', data);
+    socket.on('create_room', room => {
+        console.log('created room: ', room);
         connected = true;
 
         // Display the welcome message
-        const { buyer, seller } = data.room;
+        const { buyer, seller } = room;
         var message = "buyer: " + buyer + ", seller: " + seller;
         log(message, {
             prepend: true
