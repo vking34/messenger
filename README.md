@@ -22,7 +22,7 @@
 
      - Example:
      ```
-     var socket = io('/messenger', {
+     var socket = io('http://localhost:3000/messenger', {
      query: {
           token: 'access_token',
           user_id: 'user_id',
@@ -36,6 +36,7 @@
                - ```type```: Room type. Value: BS
                - ```buyer```: Buyer ID
                - ```seller```: Seller ID
+               - ```shop_id```: Shop ID
                -  ```creator```: Buyer ID or Seller ID
 
           - server:
@@ -43,6 +44,7 @@
                - ```type```: Room type. Value: BS
                - ```buyer```: Buyer ID
                - ```seller```: Seller ID
+               - ```shop_id```: Shop ID
                -  ```creator```: Buyer ID or Seller ID
 
      - ```new_message```:

@@ -5,8 +5,10 @@ interface RoomCreation {
      type: RoomType,
      seller: string,
      buyer: string,
+     shop_id: string,
      creator: string,
-     role: string
+     role: string,
+     shop: any
 }
 
 

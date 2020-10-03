@@ -8,6 +8,7 @@ import { Server, Socket } from 'socket.io';
 import monogoose from 'mongoose';
 import cuid from 'cuid';
 import cors from 'cors';
+import axios from 'axios';
 
 // types
 import { RoomCreation } from './requests/room';
@@ -22,11 +23,12 @@ import { MessageModel } from './models/message';
 import RoomModel from './models/room';
 
 // configs
-require('dotenv').config();
+// require('dotenv').config();
 const port = process.env.PORT || 3000;
 const app = express();
 const server = http.createServer(app);
 const MESSENGER_NS = process.env.MESSENGER_NAMESPACE;
+import {SHOP_SERVICE} from './routes/room';
 
 // db
 monogoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -92,9 +94,12 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
 
         io.of(MESSENGER_NS).to(room.creator).emit('create_room', room);
 
-        RoomModel.findById(room['_id'], (_e, record) => {
-            if (!record)
+        RoomModel.findById(room['_id'], async (_e, record) => {
+            if (!record){
+                let shopResponse = await axios.get(SHOP_SERVICE + room.shop_id);
+                room.shop = shopResponse.data;
                 RoomModel.create(room).catch(_e => { });
+            }
         });
     })
 

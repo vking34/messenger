@@ -12,7 +12,8 @@ const RoomSchema: Schema = new mongoose.Schema(
           creator: String,
           buyer: String,
           seller: String,
-          last_message: MessageSchema 
+          last_message: MessageSchema,
+          shop: Object
      },
      {
           timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
