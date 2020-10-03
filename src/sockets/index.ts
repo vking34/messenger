@@ -14,7 +14,7 @@ import handleSeenMessageEvent from './seenMessageEvent';
 import handleSetUser from './setUserEvent';
 
 
-console.log("===========process.env.REDIS_ADDRESS: " + process.env.REDIS_ADDRESS)
+console.log("===========process.env.REDIS_ADDRESS1: " + process.env.REDIS_ADDRESS)
 
 // init socket server
 const io: Server = require('socket.io')(server);
