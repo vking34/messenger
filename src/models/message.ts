@@ -10,7 +10,7 @@ const MessageSchema: Schema = new mongoose.Schema(
           },
           to: {
                type: String,
-               required: [true, 'Sender username is required!']
+               required: [true, 'Receiver username is required!']
           },
           type: String,
           content: {

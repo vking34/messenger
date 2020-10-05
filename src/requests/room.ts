@@ -1,6 +1,6 @@
 import {RoomType} from '../constants/room';
 
-interface RoomCreation {
+export interface RoomCreation {
      _id: string,
      type: RoomType,
      seller: string,
@@ -11,13 +11,7 @@ interface RoomCreation {
      shop: any
 }
 
-
-interface RoomFetch {
+export interface RoomFetch {
      user_id: string,
      role: string
-}
-
-export {
-     RoomCreation,
-     RoomFetch
 }
