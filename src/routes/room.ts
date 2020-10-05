@@ -6,7 +6,7 @@ import axios from 'axios';
 import { UserRequest } from '../requests/user';
 
 
-require('dotenv').config();
+// require('dotenv').config();
 export const SHOP_SERVICE = process.env.SHOP_SERVICE + '/';
 const router: Router = express.Router();
 
