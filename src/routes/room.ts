@@ -3,7 +3,7 @@ import { RoomCreation } from '../requests/room';
 import RoomModel from '../models/room';
 import { UserRole } from '../constants/user';
 import axios from 'axios';
-// require('dotenv').config();
+require('dotenv').config();
 
 export const SHOP_SERVICE = process.env.SHOP_SERVICE + '/';
 const router: Router = express.Router();
@@ -11,19 +11,26 @@ const router: Router = express.Router();
 
 // get chat rooms
 router.get('', async (req: Request, resp: Response) => {
-     var { user_id, role } = req.query;
-     var rooms, condition, projection;
+     console.log(req.query);
+
+     var { user_id, role, name } = req.query;
+     var rooms, projection, condition = {};
      const sortOptions = { 'last_message.created_at': -1 };
 
      if (role === UserRole.BUYER) {
-          condition = { buyer: user_id };
+          condition['buyer'] = user_id;
           projection = { buyer_info: 0 };
+          if (name)
+               condition['shop.name'] = { $regex: name, $options: 'i' }
 
           rooms = await RoomModel.find(condition, projection).sort(sortOptions);
      }
      else {
-          condition = { seller: user_id };
+          condition['seller'] = user_id;
           projection = { shop: 0 };
+          if (name) {
+               condition['buyer_info.name'] = { $regex: name, $options: 'i' }
+          }
 
           rooms = await RoomModel.find(condition, projection).sort(sortOptions);
      }
@@ -33,7 +40,7 @@ router.get('', async (req: Request, resp: Response) => {
           role,
           rooms
      });
-})
+});
 
 
 // create room
