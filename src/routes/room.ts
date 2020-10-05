@@ -17,11 +17,12 @@ router.get('', async (req: Request, resp: Response) => {
 
      var { user_id, role, name } = req.query;
      var rooms, projection, condition = {};
-     const sortOptions = { 'last_message.created_at': -1 };
+     
 
      if (role === UserRole.BUYER) {
           condition['buyer'] = user_id;
           projection = { buyer_info: 0 };
+          let sortOptions = { pinned_by_buyer: -1, 'last_message.created_at': -1 };
           if (name)
                condition['shop.name'] = { $regex: name, $options: 'i' }
 
@@ -30,6 +31,7 @@ router.get('', async (req: Request, resp: Response) => {
      else {
           condition['seller'] = user_id;
           projection = { shop: 0 };
+          let sortOptions = { pinned_by_seller: -1, 'last_message.created_at': -1 };
           if (name) {
                condition['buyer_info.name'] = { $regex: name, $options: 'i' }
           }
@@ -78,11 +80,8 @@ router.post('/', async (req: Request, resp: Response) => {
 // pin room
 router.post('/:room_id/pin', async (req: Request, resp: Response) => {
      const room_id = req.params.room_id;
-     const user: UserRequest = req.body;
-
-     let room = await RoomModel.findById(room_id, (_e) => { });
-     console.log(room);
      
+     let room = await RoomModel.findById(room_id, (_e) => { });
      if (!room) {
           resp.status(400).send({
                status: false,
@@ -90,10 +89,9 @@ router.post('/:room_id/pin', async (req: Request, resp: Response) => {
           });
      }
 
+     const user: UserRequest = req.body;
      let pin;
      let now = Date.now();
-     console.log(now);
-     
      if (user.role === UserRole.BUYER)
           pin = { pinned_by_buyer: now }
      else
@@ -114,8 +112,8 @@ router.post('/:room_id/pin', async (req: Request, resp: Response) => {
 router.get('/:room_id', async (req: Request, resp: Response) => {
      const room_id = req.params.room_id;
      console.log(room_id);
-     
-     let room = await RoomModel.find({_id: room_id});
+
+     let room = await RoomModel.find({ _id: room_id });
 
      resp.send({
           room
