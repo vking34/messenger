@@ -32,7 +32,8 @@ $(function() {
     var $receiver = $('.receiverId');
     var $sendBtn = $('#sendMsgBtn');
 
-    var socket = io('/messenger', {
+    var socket = io('/v1/sockets/messenger', {
+        path: '/v1/sockets/socket.io',
         query: {
             token: 'access_token',
             user_role: 'BUYER'

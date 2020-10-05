@@ -3,7 +3,7 @@ import { RoomCreation } from '../requests/room';
 import RoomModel from '../models/room';
 import { UserRole } from '../constants/user';
 import axios from 'axios';
-// require('dotenv').config();
+require('dotenv').config();
 
 export const SHOP_SERVICE = process.env.SHOP_SERVICE + '/';
 const router: Router = express.Router();

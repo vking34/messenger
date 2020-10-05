@@ -7,10 +7,10 @@ const router: Router = express.Router();
 // Get messages
 router.get('/', async (req: Request, resp: Response) => {
      const params = req.query;
-     var { room_id, created_at, limit, from } = params;
-     var recordLimit = limit ? Number(limit) : 15;
-
-     var condition: any = { room_id };
+     let { room_id, created_at, limit, from } = params;
+     let recordLimit = limit ? Number(limit) : 15;
+     let sortOpt = { created_at: created_at === '1' ? 1 : -1 };
+     let condition: any = { room_id };
      if (from) {
           condition.created_at = { $lt: from.toString() }
      }
@@ -18,7 +18,7 @@ router.get('/', async (req: Request, resp: Response) => {
      const data = await MessageModel
           .find(condition)
           .limit(recordLimit)
-          .sort({ created_at: created_at === '1' ? 1 : -1 });
+          .sort(sortOpt);
 
      resp.send({
           room_id: room_id,

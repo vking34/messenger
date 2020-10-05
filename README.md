@@ -118,3 +118,7 @@
 ## DB Schema
 ![](ref/img/cz-chat-schema.png)
 
+## References
+1. Socket.io
+     - Server: https://socket.io/docs/server-api/
+     - Client: https://socket.io/docs/client-api/
