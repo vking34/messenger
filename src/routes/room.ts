@@ -3,8 +3,10 @@ import { RoomCreation } from '../requests/room';
 import RoomModel from '../models/room';
 import { UserRole } from '../constants/user';
 import axios from 'axios';
-require('dotenv').config();
+import { UserRequest } from '../requests/user';
 
+
+require('dotenv').config();
 export const SHOP_SERVICE = process.env.SHOP_SERVICE + '/';
 const router: Router = express.Router();
 
@@ -71,6 +73,54 @@ router.post('/', async (req: Request, resp: Response) => {
 
      })
 });
+
+
+// pin room
+router.post('/:room_id/pin', async (req: Request, resp: Response) => {
+     const room_id = req.params.room_id;
+     const user: UserRequest = req.body;
+
+     let room = await RoomModel.findById(room_id, (_e) => { });
+     console.log(room);
+     
+     if (!room) {
+          resp.status(400).send({
+               status: false,
+               message: 'Room not found!'
+          });
+     }
+
+     let pin;
+     let now = Date.now();
+     console.log(now);
+     
+     if (user.role === UserRole.BUYER)
+          pin = { pinned_by_buyer: now }
+     else
+          pin = { pinned_by_seller: now }
+
+     RoomModel
+          .updateOne({ _id: room_id }, pin)
+          .then(_data => resp.send({
+               status: true
+          }))
+          .catch(e => resp.status(400).send({
+               status: false,
+               message: e
+          }));
+})
+
+// get room
+router.get('/:room_id', async (req: Request, resp: Response) => {
+     const room_id = req.params.room_id;
+     console.log(room_id);
+     
+     let room = await RoomModel.find({_id: room_id});
+
+     resp.send({
+          room
+     });
+})
 
 
 export default router;

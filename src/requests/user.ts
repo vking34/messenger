@@ -3,3 +3,8 @@ export interface BasicUser {
      phone_number: string,
      email: string
 }
+
+export interface UserRequest {
+     user_id: string,
+     role: string
+}

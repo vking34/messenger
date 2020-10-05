@@ -10,8 +10,3 @@ export interface RoomCreation {
      role: string,
      shop: any
 }
-
-export interface RoomFetch {
-     user_id: string,
-     role: string
-}

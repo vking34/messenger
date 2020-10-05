@@ -19,7 +19,9 @@ const RoomSchema: Schema = new mongoose.Schema(
              name: String,
              phone_number: String,
              email: String  
-          }
+          },
+          pinned_by_buyer: Date,
+          pinned_by_seller: Date
      },
      {
           timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
