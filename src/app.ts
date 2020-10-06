@@ -27,7 +27,7 @@ monogoose.connection.once('open', () => {
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(morgan('dev'));
 app.use(bodyParser.json());
-app.use(cors());
+
 
 // sockets
 require('./sockets/index');
@@ -35,6 +35,8 @@ require('./sockets/index');
 // routes
 app.use('/v1/conversations/rooms', roomRoute);
 app.use('/v1/conversations/messages', messageRoute);
+
+app.use(cors());
 
 // start server
 server.listen(port, () => {
