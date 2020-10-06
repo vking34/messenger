@@ -18,12 +18,12 @@ console.log(MESSENGER_NS);
 
 // init socket server
 const socketOptions = {
-    path: process.env.SOCKET_PATH
+    path: process.env.SOCKET_PATH,
+    origins: 'http://localhost:3000'
 }
 const io: Server = require('socket.io')(server, socketOptions);
 // const io: Server = require('socket.io')(server);
 io.adapter(redisAdapter(process.env.REDIS_ADDRESS));
-io.origins('*:*');
 
 // socket middlewares
 io.of(MESSENGER_NS).use((socket: Socket, next) => {
