@@ -8,5 +8,6 @@ export interface RoomCreation {
      shop_id: string,
      creator: string,
      role: string,
-     shop: any
+     shop: any,
+     buyer_info: any
 }

@@ -17,6 +17,7 @@ const RoomSchema: Schema = new mongoose.Schema(
           shop: Object,
           buyer_info: {
              name: String,
+             avatar: String,
              phone_number: String,
              email: String  
           },

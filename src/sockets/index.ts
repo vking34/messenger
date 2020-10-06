@@ -13,12 +13,15 @@ import handleStopTypingEvent from './stopTypingEvent';
 import handleSeenMessageEvent from './seenMessageEvent';
 import handleVerifyUser from './verifyUserEvent';
 
+console.log(process.env.SOCKET_PATH);
+console.log(MESSENGER_NS);
 
 // init socket server
 const socketOptions = {
     path: process.env.SOCKET_PATH
 }
 const io: Server = require('socket.io')(server, socketOptions);
+// const io: Server = require('socket.io')(server);
 io.adapter(redisAdapter(process.env.REDIS_ADDRESS));
 
 

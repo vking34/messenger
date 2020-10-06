@@ -32,8 +32,8 @@ $(function() {
     var $receiver = $('.receiverId');
     var $sendBtn = $('#sendMsgBtn');
 
-    var socket = io('/v1/sockets/messenger', {
-        path: '/v1/sockets/socket.io',
+    var socket = io('/v1/conversations/events', {
+        path: '/v1/conversations/sockets',
         query: {
             token: 'access_token',
             user_role: 'BUYER'
@@ -307,6 +307,10 @@ $(function() {
     });
 
     // Socket events
+
+    socket.on('connect', () => {
+        console.log(socket);
+    });
 
     // on create room
     socket.on('create_room', room => {

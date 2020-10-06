@@ -13,9 +13,12 @@ export default (io: Server, socket: Socket) => {
           console.log('new_message', msg);
           const { from, to } = msg;
           msg._id = cuid();   // generate message id
-          
-          io.of(MESSENGER_NS).to(from).emit('new_message', msg);
-          io.of(MESSENGER_NS).to(to).emit('new_message', msg);
+          console.log(MESSENGER_NS);
+  
+          socket.emit('new_message', msg);
+          // socket.to(to).emit('new_message', msg);
+          io.of('/v1/conversations/events').to(from).emit('new_message', msg);
+          io.of('/v1/conversations/events').to(to).emit('new_message', msg);
 
           MessageModel
                .create({
