@@ -23,14 +23,14 @@ monogoose.connection.once('open', () => {
     console.log('Connected to mongoDB!');
 });
 
-// socket
-require('./sockets/index');
-
 // middlewares
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(cors());
+
+// sockets
+require('./sockets/index');
 
 // routes
 app.use('/v1/conversations/rooms', roomRoute);
