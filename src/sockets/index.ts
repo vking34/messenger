@@ -27,7 +27,7 @@ io.adapter(redisAdapter(process.env.REDIS_ADDRESS));
 
 
 // socket middlewares
-io.use((socket: Socket, next) => {
+io.of(MESSENGER_NS).use((socket: Socket, next) => {
     console.log('socket query: ', socket.handshake.query);
     let { token, user_id, user_role } = socket.handshake.query;
 
@@ -36,7 +36,7 @@ io.use((socket: Socket, next) => {
         // mark user id and join the own room
         socket['user_id'] = user_id;
         console.log('user:', socket['user_id'], 'connected.');
-        
+
         socket.join(user_id);
 
         // mark user role
