@@ -16,7 +16,6 @@ const port = process.env.PORT || 3000;
 const app = express();
 export const server = http.createServer(app);
 
-
 // db
 monogoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 monogoose.Promise = global.Promise;
@@ -27,7 +26,6 @@ monogoose.connection.once('open', () => {
 // socket
 require('./sockets/index');
 
-
 // middlewares
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(morgan('dev'));
@@ -35,8 +33,8 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // routes
-app.use('/v1/rooms', roomRoute);
-app.use('/v1/messages', messageRoute);
+app.use('/v1/conversations/rooms', roomRoute);
+app.use('/v1/conversations/messages', messageRoute);
 
 // start server
 server.listen(port, () => {
