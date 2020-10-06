@@ -106,36 +106,10 @@ router.post('/:room_id/pin', async (req: Request, resp: Response) => {
 })
 
 
-// pin room
+// unpin room
 router.delete('/:room_id/pin', async (req: Request, resp: Response) => {
      const room_id = req.params.room_id;
-     
-     // let room = await RoomModel.findById(room_id, (_e) => { });
-     // if (!room) {
-     //      resp.status(400).send({
-     //           status: false,
-     //           message: 'Room not found!'
-     //      });
-     // }
-
      const user: UserRequest = req.body;
-     // let pin;
-     // let now = Date.now();
-     // if (user.role === UserRole.BUYER)
-     //      pin = { pinned_by_buyer: now }
-     // else
-     //      pin = { pinned_by_seller: now }
-
-     // RoomModel
-     //      .updateOne({ _id: room_id }, pin)
-     //      .then(_data => resp.send({
-     //           status: true
-     //      }))
-     //      .catch(e => resp.status(400).send({
-     //           status: false,
-     //           message: e
-     //      }));
-
 
      RoomModel.findById(room_id, (_e, room) => {
           if (!room) {
