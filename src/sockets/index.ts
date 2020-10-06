@@ -18,8 +18,7 @@ console.log(MESSENGER_NS);
 
 // init socket server
 const socketOptions = {
-    path: process.env.SOCKET_PATH,
-    origins: 'http://localhost:3000'
+    path: process.env.SOCKET_PATH
 }
 const io: Server = require('socket.io')(server, socketOptions);
 // const io: Server = require('socket.io')(server);

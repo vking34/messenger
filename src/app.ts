@@ -14,6 +14,7 @@ import messageRoute from './routes/message';
 // require('dotenv').config();
 const port = process.env.PORT || 3000;
 const app = express();
+app.use(cors());
 export const server = http.createServer(app);
 
 // db
@@ -27,7 +28,7 @@ monogoose.connection.once('open', () => {
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(morgan('dev'));
 app.use(bodyParser.json());
-app.use(cors());
+
 
 // sockets
 require('./sockets/index');
