@@ -18,7 +18,8 @@ console.log(MESSENGER_NS);
 
 // init socket server
 const socketOptions = {
-    path: process.env.SOCKET_PATH
+    path: process.env.SOCKET_PATH,
+    origins: '*:*'
 }
 const io: Server = require('socket.io')(server, socketOptions);
 // const io: Server = require('socket.io')(server);
