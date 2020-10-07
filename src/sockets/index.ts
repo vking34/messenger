@@ -18,12 +18,12 @@ console.log(MESSENGER_NS);
 
 // init socket server
 const socketOptions = {
-    path: process.env.SOCKET_PATH
+    path: process.env.SOCKET_PATH,
+    origins: '*:*'
 }
 const io: Server = require('socket.io')(server, socketOptions);
 // const io: Server = require('socket.io')(server);
 io.adapter(redisAdapter(process.env.REDIS_ADDRESS));
-io.origins(['http://dev.chozoi.com', 'http://chozoi.com', 'http://localhost:3000'])
 
 // socket middlewares
 io.of(MESSENGER_NS).use((socket: Socket, next) => {
@@ -73,5 +73,3 @@ export default io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
     // event: 'verify_user' - when user reconnect, we must verify again
     handleVerifyUser(io, socket);
 });
-
-io.listen(server);
