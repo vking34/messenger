@@ -13,10 +13,12 @@ export default (io: Server, socket: Socket) => {
           console.log('new_message', msg);
           const { from, to } = msg;
           msg._id = cuid();   // generate message id
+          msg.created_at = new Date().toISOString();
 
           io.of(MESSENGER_NS).in(from).emit('new_message', msg);
           io.of(MESSENGER_NS).in(to).emit('new_message', msg);
 
+          msg.updated_at = msg.created_at;
           MessageModel
                .create({
                     ...msg,

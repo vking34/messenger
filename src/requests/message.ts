@@ -6,7 +6,9 @@ export interface MessageFormat {
      from: string,
      to: string,
      type: MessageType,
-     content: string
+     content: string,
+     created_at: string,
+     updated_at: string
 }
 
 

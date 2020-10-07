@@ -14,7 +14,8 @@
 
 ### Socket
 1. Handshake:
-     - Namespace: /messenger
+     - Namespace: /v1/conversations/events
+     - Path: /v1/conversations/sockets
      - Query:
           - ```token```
           - ```user_id```
@@ -22,7 +23,8 @@
 
      - Example:
      ```
-     var socket = io('http://localhost:3000/messenger', {
+     var socket = io('http://localhost:3002/v1/conversations/events', {
+     path: '/v1/conversations/sockets',
      query: {
           token: 'access_token',
           user_id: 'user_id',
@@ -117,6 +119,7 @@
 
 ## DB Schema
 ![](ref/img/cz-chat-schema.png)
+
 
 ## References
 1. Socket.io
