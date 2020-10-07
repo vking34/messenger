@@ -73,3 +73,5 @@ export default io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
     // event: 'verify_user' - when user reconnect, we must verify again
     handleVerifyUser(io, socket);
 });
+
+io.listen(server);

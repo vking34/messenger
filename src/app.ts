@@ -29,12 +29,12 @@ app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(cors());
 
-// sockets
-require('./sockets/index');
-
 // routes
 app.use('/v1/conversations/rooms', roomRoute);
 app.use('/v1/conversations/messages', messageRoute);
+
+// sockets
+require('./sockets/index');
 
 // start server
 server.listen(port, () => {
