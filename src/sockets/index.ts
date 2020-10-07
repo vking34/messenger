@@ -18,8 +18,15 @@ console.log(MESSENGER_NS);
 
 // init socket server
 const socketOptions = {
-    path: process.env.SOCKET_PATH,
-    origins: '*:*'
+    // server
+    path: process.env.SOCKET_PATH,  // custom path
+    // serveClient: false,             // do not allow files to client (socket.io.js) (for production)
+    origins: '*:*',                 // allow all origins with any port
+
+    // engine
+    transports: ['websocket'],       // fix transport protocol to websocket
+    cookie: false,
+    cookiePath: false
 }
 const io: Server = require('socket.io')(server, socketOptions);
 // const io: Server = require('socket.io')(server);

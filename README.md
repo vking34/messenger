@@ -23,8 +23,9 @@
 
      - Example:
      ```
-     var socket = io('http://localhost:3002/v1/conversations/events', {
+     var socket = io('https://api.chozoi.com:3002/v1/conversations/events', {
      path: '/v1/conversations/sockets',
+     transports: ['websocket'],
      query: {
           token: 'access_token',
           user_id: 'user_id',
