@@ -16,6 +16,7 @@ router.get('', async (req: Request, resp: Response) => {
      let { user_id, role, name, pinned } = req.query;
      let rooms, projection, sortOptions, condition = {};
 
+     condition['enable'] = { $ne: false };
      if (role === UserRole.BUYER) {
           condition['buyer'] = user_id;
           projection = { buyer_info: 0, pinned_by_seller: 0 };
@@ -43,6 +44,7 @@ router.get('', async (req: Request, resp: Response) => {
                     condition['pinned_by_buyer'] = { $exists: false }
           }
      }
+     console.log(condition);
 
      rooms = await RoomModel.find(condition, projection).sort(sortOptions);
      resp.send({
@@ -147,22 +149,61 @@ router.delete('/:room_id/pin', async (req: Request, resp: Response) => {
      })
 })
 
-// mark as unseen message
-// router.put('/:room_id/unseen', (req: Request, resp: Response) => {
-//      const room_id = req.params.room_id;
+// mark as unseen room
+router.put('/:room_id/seen', (req: Request, resp: Response) => {
+     const room_id = req.params.room_id;
+     const user: UserRequest = req.body;
 
-//      RoomModel.findById(room_id, (_e, room) => {
-//           if (!room) {
-//                resp.status(400).send({
-//                     status: false,
-//                     message: 'Room not found!'
-//                });
-//           }
+     RoomModel.findById(room_id, (_e, room) => {
+          if (!room) {
+               resp.status(400).send({
+                    status: false,
+                    message: 'Room not found!'
+               });
+          }
 
+          if (room['last_message']['from'] === user.user_id)
+               resp.status(400).send({
+                    status: false,
+                    message: 'The last message is yours!'
+               });
 
+          if (!room['last_message']['is_seen'])
+               resp.status(400).send({
+                    status: false,
+                    message: 'The last message is unseen!'
+               });
 
-//      })
-// });
+          room['last_message']['is_seen'] = true;
+          room.save();
+          resp.send({
+               status: true
+          });
+     })
+});
+
+// delete room
+router.delete('/:room_id', (req: Request, resp: Response) => {
+     const room_id = req.params.room_id;
+
+     RoomModel.findById(room_id, (_e, room) => {
+          console.log(room);
+          if (!room)
+               resp.send({
+                    status: false,
+                    message: 'Room not found!'
+               });
+          else {
+               console.log(room);
+
+               room['enable'] = false;
+               room.save();
+               resp.send({
+                    status: true
+               });
+          }
+     });
+})
 
 // get room
 router.get('/:room_id', async (req: Request, resp: Response) => {
