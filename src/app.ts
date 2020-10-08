@@ -24,7 +24,7 @@ monogoose.connection.once('open', () => {
 });
 
 // middlewares
-app.use(express.static(path.join(__dirname, '../public')));
+app.use('/v1/conversations/test', express.static(path.join(__dirname, '../public')));
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(cors());

@@ -35,7 +35,7 @@
 
 2. Events:
 
-      - ```create_room```:
+     - ```create_room```:
           - client:
                - ```type```: Room type. Value: BS
                - ```buyer```: Buyer ID
@@ -93,7 +93,7 @@
                - ```room_id```: Room ID. Value: \<BuyerID\>.\<SellerID\>
                - ```from```: Sender ID
                - ```to```: Receiver ID
-          
+
      - ```stop_typing```:
           - client:
                - ```room_id```: Room ID. Value: \<BuyerID\>.\<SellerID\>
@@ -103,7 +103,6 @@
                - ```room_id```: Room ID. Value: \<BuyerID\>.\<SellerID\>
                - ```from```: Sender ID
                - ```to```: Receiver ID
-          
 
      - ```seen_messages```:
           - client:
