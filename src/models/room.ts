@@ -16,13 +16,17 @@ const RoomSchema: Schema = new mongoose.Schema(
           last_message: MessageSchema,
           shop: Object,
           buyer_info: {
-             name: String,
-             avatar: String,
-             phone_number: String,
-             email: String  
+               name: String,
+               avatar: String,
+               phone_number: String,
+               email: String
           },
           pinned_by_buyer: Date,
-          pinned_by_seller: Date
+          pinned_by_seller: Date,
+          enable: {
+               type: Boolean,
+               default: true
+          }
      },
      {
           timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }

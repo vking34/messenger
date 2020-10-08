@@ -13,13 +13,13 @@ const router: Router = express.Router();
 
 // get chat rooms
 router.get('', async (req: Request, resp: Response) => {
-     var { user_id, role, name, pinned } = req.query;
-     var rooms, projection, condition = {};
+     let { user_id, role, name, pinned } = req.query;
+     let rooms, projection, sortOptions, condition = {};
 
      if (role === UserRole.BUYER) {
           condition['buyer'] = user_id;
-          projection = { buyer_info: 0 };
-          let sortOptions = { pinned_by_buyer: -1, 'last_message.created_at': -1 };
+          projection = { buyer_info: 0, pinned_by_seller: 0 };
+          sortOptions = { pinned_by_buyer: -1, 'last_message.created_at': -1 };
           if (name)
                condition['shop.name'] = { $regex: name, $options: 'i' }
 
@@ -28,26 +28,23 @@ router.get('', async (req: Request, resp: Response) => {
                     condition['pinned_by_buyer'] = { $exists: true } :
                     condition['pinned_by_buyer'] = { $exists: false }
           }
-
-          rooms = await RoomModel.find(condition, projection).sort(sortOptions);
      }
      else {
           condition['seller'] = user_id;
-          projection = { shop: 0 };
-          let sortOptions = { pinned_by_seller: -1, 'last_message.created_at': -1 };
-          if (name) {
+          projection = { shop: 0, pinned_by_buyer: 0 };
+          sortOptions = { pinned_by_seller: -1, 'last_message.created_at': -1 };
+          if (name)
                condition['buyer_info.name'] = { $regex: name, $options: 'i' }
-          }
+
 
           if (pinned) {
                pinned === '1' ?
                     condition['pinned_by_buyer'] = { $exists: true } :
                     condition['pinned_by_buyer'] = { $exists: false }
           }
-
-          rooms = await RoomModel.find(condition, projection).sort(sortOptions);
      }
 
+     rooms = await RoomModel.find(condition, projection).sort(sortOptions);
      resp.send({
           user_id,
           role,
@@ -78,6 +75,7 @@ router.post('/', async (req: Request, resp: Response) => {
           else
                resp.send({
                     status: false,
+                    room_id: room._id,
                     message: 'The room is existing!'
                });
 

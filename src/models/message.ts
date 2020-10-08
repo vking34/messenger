@@ -26,8 +26,9 @@ const MessageSchema: Schema = new mongoose.Schema(
      { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 );
 
-const MessageModel = mongoose.model('cz_messages', MessageSchema);
+// MessageSchema.index({ room_id: 1, created_at: -1 });
 
+const MessageModel = mongoose.model('cz_messages', MessageSchema);
 export {
      MessageSchema,
      MessageModel
