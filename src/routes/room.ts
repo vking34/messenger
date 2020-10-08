@@ -65,15 +65,14 @@ router.post('/', async (req: Request, resp: Response) => {
      RoomModel.findById(room._id, async (_e, record) => {
           if (!record) {
                // need to check user_id in shop same to seller_id 
-
+               let shopResponse = await axios.get(SHOP_SERVICE + room.shop_id);
+               room.shop = shopResponse.data;
                resp.send({
                     status: true,
                     message: 'Created room successfully!',
                     room
                });
 
-               let shopResponse = await axios.get(SHOP_SERVICE + room.shop_id);
-               room.shop = shopResponse.data;
                RoomModel.create(room).catch(_e => { });
           }
           else
