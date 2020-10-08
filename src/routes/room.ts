@@ -57,6 +57,12 @@ router.get('', async (req: Request, resp: Response) => {
 router.post('/', async (req: Request, resp: Response) => {
      // console.log('shop service:', SHOP_SERVICE);
      const room: RoomCreation = req.body;
+     if (room.buyer === room.seller)
+          resp.send({
+               status: false,
+               message: 'Buyer is the same to seller'
+          });
+
      room._id = room.buyer + '.' + room.seller;
 
      RoomModel.findById(room._id, async (_e, record) => {
