@@ -147,13 +147,29 @@ router.delete('/:room_id/pin', async (req: Request, resp: Response) => {
      })
 })
 
+// mark as unseen message
+// router.put('/:room_id/unseen', (req: Request, resp: Response) => {
+//      const room_id = req.params.room_id;
+
+//      RoomModel.findById(room_id, (_e, room) => {
+//           if (!room) {
+//                resp.status(400).send({
+//                     status: false,
+//                     message: 'Room not found!'
+//                });
+//           }
+
+
+
+//      })
+// });
 
 // get room
 router.get('/:room_id', async (req: Request, resp: Response) => {
      const room_id = req.params.room_id;
-     console.log(room_id);
 
-     let room = await RoomModel.find({ _id: room_id });
+     let result = await RoomModel.find({ _id: room_id });
+     let room = result ? result[0] : {};
 
      resp.send({
           room
