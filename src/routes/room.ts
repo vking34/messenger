@@ -13,15 +13,21 @@ const router: Router = express.Router();
 
 // get chat rooms
 router.get('', async (req: Request, resp: Response) => {
-     var { user_id, role, name } = req.query;
+     var { user_id, role, name, pinned } = req.query;
      var rooms, projection, condition = {};
-     
+
      if (role === UserRole.BUYER) {
           condition['buyer'] = user_id;
           projection = { buyer_info: 0 };
           let sortOptions = { pinned_by_buyer: -1, 'last_message.created_at': -1 };
           if (name)
                condition['shop.name'] = { $regex: name, $options: 'i' }
+
+          if (pinned) {
+               pinned === '1' ?
+                    condition['pinned_by_buyer'] = { $exists: true } :
+                    condition['pinned_by_buyer'] = { $exists: false }
+          }
 
           rooms = await RoomModel.find(condition, projection).sort(sortOptions);
      }
@@ -31,6 +37,12 @@ router.get('', async (req: Request, resp: Response) => {
           let sortOptions = { pinned_by_seller: -1, 'last_message.created_at': -1 };
           if (name) {
                condition['buyer_info.name'] = { $regex: name, $options: 'i' }
+          }
+
+          if (pinned) {
+               pinned === '1' ?
+                    condition['pinned_by_buyer'] = { $exists: true } :
+                    condition['pinned_by_buyer'] = { $exists: false }
           }
 
           rooms = await RoomModel.find(condition, projection).sort(sortOptions);
@@ -77,7 +89,7 @@ router.post('/', async (req: Request, resp: Response) => {
 // pin room
 router.post('/:room_id/pin', async (req: Request, resp: Response) => {
      const room_id = req.params.room_id;
-     
+
      let room = await RoomModel.findById(room_id, (_e) => { });
      if (!room) {
           resp.status(400).send({
@@ -123,7 +135,7 @@ router.delete('/:room_id/pin', async (req: Request, resp: Response) => {
                room['pinned_by_buyer'] = undefined;
           else
                room['pinned_by_seller'] = undefined;
-          
+
           room.save();
           resp.send({
                status: true,

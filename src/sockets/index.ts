@@ -13,9 +13,6 @@ import handleStopTypingEvent from './stopTypingEvent';
 import handleSeenMessageEvent from './seenMessageEvent';
 import handleVerifyUser from './verifyUserEvent';
 
-console.log(process.env.SOCKET_PATH);
-console.log(MESSENGER_NS);
-
 // init socket server
 const socketOptions = {
     // server
@@ -24,9 +21,9 @@ const socketOptions = {
     origins: '*:*',                 // allow all origins with any port
 
     // engine
-    transports: ['websocket'],       // fix transport protocol to websocket
-    cookie: false,
-    cookiePath: false
+    transports: ['websocket'],      // fix transport protocol to websocket
+    cookie: false,                  // do not send cookie (up to usecase) 
+    cookiePath: false               // do not save cookie (up to usecase)
 }
 const io: Server = require('socket.io')(server, socketOptions);
 // const io: Server = require('socket.io')(server);

@@ -23,7 +23,7 @@
 
      - Example:
      ```
-     var socket = io('https://api.chozoi.com:3002/v1/conversations/events', {
+     var socket = io('https://api.chozoi.com/v1/conversations/events', {
      path: '/v1/conversations/sockets',
      transports: ['websocket'],
      query: {
@@ -34,21 +34,8 @@
      ```
 
 2. Events:
-     - ```reconnect```:
-          - client: emit event ```verify_user```:
-               - ```token```
-               - ```user_id```
-               - ```user_role```: BUYER / SELLER
 
-     - ```verify_user```:
-          - client:
-               - ```token```
-               - ```user_id```
-               - ```user_role```: BUYER / SELLER
-          - server:
-               - ```status```: boolean
-
-     - ```create_room```:
+      - ```create_room```:
           - client:
                - ```type```: Room type. Value: BS
                - ```buyer```: Buyer ID
@@ -81,6 +68,21 @@
                - ```type```: TEXT | IMAGE | EMOJI
                -  ```content```: Message content
                -  ```client_message_id```: (optional) Client generator unique id for server to comfirm
+               - ```created_at```: Created time
+
+     - ```reconnect```:
+          - client: emit event ```verify_user```:
+               - ```token```
+               - ```user_id```
+               - ```user_role```: BUYER / SELLER
+
+     - ```verify_user```:
+          - client:
+               - ```token```
+               - ```user_id```
+               - ```user_role```: BUYER / SELLER
+          - server:
+               - ```status```: boolean
 
      - ```typing```:
           - client:
@@ -92,7 +94,6 @@
                - ```from```: Sender ID
                - ```to```: Receiver ID
           
-
      - ```stop_typing```:
           - client:
                - ```room_id```: Room ID. Value: \<BuyerID\>.\<SellerID\>
