@@ -8,7 +8,7 @@ import RoomModel from '../models/room';
 export default (_io: Server, socket: Socket) => {
 
      socket.on('seen_messages', (data) => {
-          console.log('seen messages: ', data);
+          // console.log('seen messages: ', data);
           const { room_id, to, from } = data;
 
           socket.to(to).emit('seen_messages', data);
@@ -23,33 +23,13 @@ export default (_io: Server, socket: Socket) => {
                if (data.message_ids)
                     if (room['last_message']['_id'] === data.message_ids[0]) {
                          room['last_message']['is_seen'] = true;
-                         // RoomModel
-                         //      .updateOne(
-                         //           { _id: room_id },
-                         //           { last_message: room.last_message })
-                         //      .catch(_e => { });
                     }
 
                from === room['seller'] ?
-                    room['unseen_messages_seller'] = 0 :
-                    room['unseen_messages_buyer'] = 0;
+                    room['unseen_messages_by_seller'] = 0 :
+                    room['unseen_messages_by_buyer'] = 0;
 
                room.save();
           });
-          // if (data.message_ids)
-          //      if (room.last_message._id === data.message_ids[0]) {
-          //           room.last_message.is_seen = true;
-          //           // RoomModel
-          //           //      .updateOne(
-          //           //           { _id: room_id },
-          //           //           { last_message: room.last_message })
-          //           //      .catch(_e => { });
-          //      }
-
-          // from === room.seller ?
-          //      room.unseen_messages_seller = 0 :
-          //      room.unseen_messages_buyer = 0;
-
-          // room.save();
      });
 }
