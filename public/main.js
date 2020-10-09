@@ -40,6 +40,7 @@ $(function() {
         transports: ['websocket'],
         query: {
             token: 'access_token',
+            user_id: '771',
             user_role: 'BUYER'
         }
     });
@@ -317,6 +318,11 @@ $(function() {
     socket.on('connect', () => {
         console.log(socket);
     });
+
+    // get list of active users
+    socket.on('active_user_list', (data) => {
+        console.log(data);
+    })
 
     // on create room
     socket.on('create_room', room => {

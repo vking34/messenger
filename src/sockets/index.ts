@@ -4,6 +4,8 @@ import redisAdapter from 'socket.io-redis';
 
 export const MESSENGER_NS = process.env.MESSENGER_NAMESPACE;
 
+import scanActiveUsers from './scanActiveUsers';
+
 // events
 import disconnectEvent from './disconnectEvent';
 import handleNewMessageEvent from './newMessageEvent';
@@ -76,4 +78,7 @@ export default io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
 
     // event: 'verify_user' - when user reconnect, we must verify again
     handleVerifyUser(io, socket);
+
+    // scan active users
+    scanActiveUsers(io, socket);
 });

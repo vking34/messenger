@@ -1,9 +1,9 @@
 import express, { Response, Request, Router } from 'express';
-import { RoomCreation } from '../requests/room';
+import { RoomCreation } from '../interfaces/room';
 import RoomModel from '../models/room';
 import { UserRole } from '../constants/user';
 import axios from 'axios';
-import { UserRequest } from '../requests/user';
+import { UserRequest } from '../interfaces/user';
 
 
 // require('dotenv').config();

@@ -70,20 +70,6 @@
                -  ```client_message_id```: (optional) Client generator unique id for server to comfirm
                - ```created_at```: Created time
 
-     - ```reconnect```:
-          - client: emit event ```verify_user```:
-               - ```token```
-               - ```user_id```
-               - ```user_role```: BUYER / SELLER
-
-     - ```verify_user```:
-          - client:
-               - ```token```
-               - ```user_id```
-               - ```user_role```: BUYER / SELLER
-          - server:
-               - ```status```: boolean
-
      - ```typing```:
           - client:
                - ```room_id```: Room ID. Value: \<BuyerID\>.\<SellerID\>
@@ -117,6 +103,35 @@
                - ```to```: Receiver ID
                - ```message_ids```: An array of the seen messages 
 
+     - ```active_user_list```: get list of active users
+          - server:
+               - ```user_id```
+               - ```user_role```
+               - ```rooms```: Array
+                    - ```room_id```
+                    - ```status```: Boolean
+     
+     - ```change_user_status```:
+          - server:
+               - ```user_id```
+               - ```user_role```
+               - ```room_id```
+               - ```status```: Boolean
+
+
+     - ```reconnect```:
+          - client: emit event ```verify_user```:
+               - ```token```
+               - ```user_id```
+               - ```user_role```: BUYER / SELLER
+
+     - ```verify_user```:
+          - client:
+               - ```token```
+               - ```user_id```
+               - ```user_role```: BUYER / SELLER
+          - server:
+               - ```status```: boolean
 
 ## DB Schema
 ![](ref/img/cz-chat-schema.png)

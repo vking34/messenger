@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import { MessageFormat } from '../requests/message';
+import { MessageFormat } from '../interfaces/message';
 import cuid from 'cuid';
 import { MESSENGER_NS } from './index';
 
