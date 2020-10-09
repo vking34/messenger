@@ -6,7 +6,6 @@ import { RoomStatus, StatusRoomList } from '../interfaces/room';
 
 export default (io: Server, socket: Socket) => {
      let { user_id, user_role } = socket.handshake.query;
-
      let condition: any = { enable: { $ne: false } };
      let projection: any;
      let sortOptions: any;
@@ -30,7 +29,7 @@ export default (io: Server, socket: Socket) => {
                };
 
                if (user_role === UserRole.BUYER) {
-                    roomRecords.forEach(async (room, index) => {
+                    roomRecords.forEach((room, index) => {
                          const room_id = room._id;
                          let roomStatus: RoomStatus = {
                               room_id,
@@ -60,7 +59,7 @@ export default (io: Server, socket: Socket) => {
                     })
                }
                else {
-                    roomRecords.forEach(async (room, index) => {
+                    roomRecords.forEach((room, index) => {
                          const room_id = room._id;
                          let roomStatus: RoomStatus = {
                               room_id,
@@ -92,5 +91,3 @@ export default (io: Server, socket: Socket) => {
           }
      }).sort(sortOptions);
 }
-
-

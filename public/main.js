@@ -324,6 +324,11 @@ $(function() {
         console.log(data);
     })
 
+    // on user status change
+    socket.on('change_user_status', (data) => {
+        console.log(data);
+    })
+
     // on create room
     socket.on('create_room', room => {
         console.log('created room: ', room);
