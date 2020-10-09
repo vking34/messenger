@@ -19,7 +19,7 @@ router.get('', async (req: Request, resp: Response) => {
      condition['enable'] = { $ne: false };
      if (role === UserRole.BUYER) {
           condition['buyer'] = user_id;
-          projection = { buyer_info: 0, pinned_by_seller: 0 };
+          projection = { buyer_info: 0, pinned_by_seller: 0, seller_unseen_messages: 0 };
           sortOptions = { pinned_by_buyer: -1, 'last_message.created_at': -1 };
           if (name)
                condition['shop.name'] = { $regex: name, $options: 'i' }
@@ -32,7 +32,7 @@ router.get('', async (req: Request, resp: Response) => {
      }
      else {
           condition['seller'] = user_id;
-          projection = { shop: 0, pinned_by_buyer: 0 };
+          projection = { shop: 0, pinned_by_buyer: 0, buyer_unseen_messages: 0 };
           sortOptions = { pinned_by_seller: -1, 'last_message.created_at': -1 };
           if (name)
                condition['buyer_info.name'] = { $regex: name, $options: 'i' }

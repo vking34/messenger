@@ -26,8 +26,8 @@ export default (_io: Server, socket: Socket) => {
                     }
 
                from === room['seller'] ?
-                    room['unseen_messages_by_seller'] = 0 :
-                    room['unseen_messages_by_buyer'] = 0;
+                    room['seller_unseen_messages'] = 0 :
+                    room['buyer_unseen_messages'] = 0;
 
                room.save();
           });

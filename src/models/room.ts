@@ -27,11 +27,11 @@ const RoomSchema: Schema = new mongoose.Schema(
                type: Boolean,
                default: true
           },
-          unseen_messages_by_buyer: {
+          buyer_unseen_messages: {
                type: Number,
                default: 0
           },
-          unseen_messages_by_seller: {
+          seller_unseen_messages: {
                type: Number,
                default: 0
           }
