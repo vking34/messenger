@@ -24,9 +24,18 @@ export default (io: Server, socket: Socket) => {
                     ...msg,
                     is_seen: false
                })
-               .then(record => {
-                    RoomModel
-                         .updateOne({ _id: msg.room_id }, { last_message: record }, (_e, _r) => { });
+               .then(message => {
+                    // RoomModel
+                    //      .updateOne({ _id: msg.room_id }, { last_message: message }, (_e, _r) => { });
+
+                    RoomModel.findById(msg.room_id, (_e, room) => {
+                         room['last_message'] = message;
+                         to === room['seller'] ?
+                              room['unseen_messages_by_seller']++ :
+                              room['unseen_messages_by_buyer']++;
+
+                         room.save();
+                    })
                })
                .catch((_e) => { });
      });

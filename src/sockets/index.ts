@@ -68,7 +68,7 @@ export default io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
     // event: 'stop_typing'
     handleStopTypingEvent(io, socket);
 
-    // event: 'seen_message' - the client have seen message
+    // event: 'seen_messages' - the client have seen message
     handleSeenMessageEvent(io, socket);
 
     // event: 'disconnect'

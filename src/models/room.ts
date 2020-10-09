@@ -26,6 +26,14 @@ const RoomSchema: Schema = new mongoose.Schema(
           enable: {
                type: Boolean,
                default: true
+          },
+          unseen_messages_by_buyer: {
+               type: Number,
+               default: 0
+          },
+          unseen_messages_by_seller: {
+               type: Number,
+               default: 0
           }
      },
      {

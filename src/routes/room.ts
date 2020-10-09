@@ -78,12 +78,24 @@ router.post('/', async (req: Request, resp: Response) => {
 
                RoomModel.create(room).catch(_e => { });
           }
-          else
-               resp.send({
-                    status: false,
-                    room_id: room._id,
-                    message: 'The room is existing!'
-               });
+          else {
+               if (record['enable'] === false) {
+                    record['enable'] = true;
+                    record.save();
+                    resp.send({
+                         status: true,
+                         message: 'Created room successfully!',
+                         room
+                    });
+               }
+               else
+                    resp.send({
+                         status: false,
+                         room_id: room._id,
+                         message: 'The room is existing!'
+                    });
+          }
+
 
      })
 });

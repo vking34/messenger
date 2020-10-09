@@ -32,8 +32,8 @@ $(function() {
     var $receiver = $('.receiverId');
     var $sendBtn = $('#sendMsgBtn');
 
-    const API_URL = 'https://api.chozoi.com';
-    // const API_URL = 'http://localhost:3002';
+    // const API_URL = 'https://api.chozoi.com';
+    const API_URL = 'http://localhost:3002';
     const MESSENGER_NS = API_URL + '/v1/conversations/events';
     var socket = io(MESSENGER_NS, {
         path: '/v1/conversations/sockets',
@@ -299,15 +299,17 @@ $(function() {
 
         // all unseen messages
         var last_msg00 = messages[messages.length - 1];
+        console.log('last message', last_msg00);
+        console.log(username);
+        // if (last_msg00)
+        //     if (last_msg00.from !== username)
 
-        if (last_msg00)
-            if (last_msg00.from !== username)
-                socket.emit('seen_messages', {
-                    room_id: roomId,
-                    from: username,
-                    to: receiver,
-                    message_ids: [last_msg00._id]
-                });
+        socket.emit('seen_messages', {
+            room_id: roomId,
+            from: username,
+            to: receiver,
+            message_ids: [last_msg00._id]
+        });
     });
 
     // Socket events
