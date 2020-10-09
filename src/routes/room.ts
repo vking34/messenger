@@ -37,14 +37,12 @@ router.get('', async (req: Request, resp: Response) => {
           if (name)
                condition['buyer_info.name'] = { $regex: name, $options: 'i' }
 
-
           if (pinned) {
                pinned === '1' ?
                     condition['pinned_by_buyer'] = { $exists: true } :
                     condition['pinned_by_buyer'] = { $exists: false }
           }
      }
-     console.log(condition);
 
      rooms = await RoomModel.find(condition, projection).sort(sortOptions);
      resp.send({
@@ -107,9 +105,9 @@ router.post('/:room_id/pin', async (req: Request, resp: Response) => {
      let pin;
      let now = Date.now();
      if (user.role === UserRole.BUYER)
-          pin = { pinned_by_buyer: now }
+          pin = { pinned_by_buyer: now };
      else
-          pin = { pinned_by_seller: now }
+          pin = { pinned_by_seller: now };
 
      RoomModel
           .updateOne({ _id: room_id }, pin)
@@ -187,15 +185,12 @@ router.delete('/:room_id', (req: Request, resp: Response) => {
      const room_id = req.params.room_id;
 
      RoomModel.findById(room_id, (_e, room) => {
-          console.log(room);
           if (!room)
                resp.send({
                     status: false,
                     message: 'Room not found!'
                });
           else {
-               console.log(room);
-
                room['enable'] = false;
                room.save();
                resp.send({
