@@ -42,7 +42,7 @@ export default (io: Server, socket: Socket) => {
                                    roomStatus.status = true;
 
                                    // send notification that this user is online
-                                   io.of(MESSENGER_NS).in(user_id).clients((_e_, connections) => {
+                                   io.of(MESSENGER_NS).in(room['seller']).clients((_e_, connections) => {
                                         if (connections.length > 1)
                                              socket.to(room['seller']).emit('change_user_status', {
                                                   user_id,
@@ -61,14 +61,27 @@ export default (io: Server, socket: Socket) => {
                }
                else {
                     roomRecords.forEach(async (room, index) => {
+                         const room_id = room._id;
                          let roomStatus: RoomStatus = {
-                              room_id: room._id,
+                              room_id,
                               status: false
                          }
 
                          io.of(MESSENGER_NS).in(room['buyer']).clients((_e_, clients) => {
-                              if (clients.length > 0)
+                              if (clients.length > 0) {
                                    roomStatus.status = true;
+
+                                   // send notification that this user is online
+                                   io.of(MESSENGER_NS).in(room['buyer']).clients((_e_, connections) => {
+                                        if (connections.length > 1)
+                                             socket.to(room['buyer']).emit('change_user_status', {
+                                                  user_id,
+                                                  user_role,
+                                                  room_id,
+                                                  status: true
+                                             });
+                                   });
+                              }
 
                               data.rooms.push(roomStatus);
                               if (index === roomRecords.length - 1)
