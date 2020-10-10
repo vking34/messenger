@@ -7,8 +7,8 @@ import { MESSENGER_NS } from './index';
 export default (io: Server, socket: Socket) => {
     socket.on('disconnect', () => {
         let { user_id, user_role } = socket.handshake.query;
-        console.log(user_id, 'disconnected!');
-        console.log('socket id:', socket.id);
+        // console.log(user_id, 'disconnected!');
+        // console.log('socket id:', socket.id);
         
         socket.leave(user_id);
 
@@ -33,12 +33,7 @@ export default (io: Server, socket: Socket) => {
                 RoomModel.find(condition, projection, (_e, roomRecords) => {
                     if (roomRecords.length > 0) {
                         let target;
-                        if (user_role === UserRole.BUYER) {
-                            target = 'seller';
-                        }
-                        else {
-                            target = 'buyer';
-                        }
+                        target = user_role === UserRole.BUYER ? 'seller' : 'buyer';
 
                         roomRecords.forEach((room) => {
                             const room_id = room._id;
