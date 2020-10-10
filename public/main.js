@@ -1,4 +1,4 @@
-$(function() {
+$(function () {
     var FADE_TIME = 150; // ms
     var TYPING_TIMER_LENGTH = 400; // ms
     var COLORS = [
@@ -35,15 +35,7 @@ $(function() {
     // const API_URL = 'https://api.chozoi.com';
     const API_URL = 'http://localhost:3002';
     const MESSENGER_NS = API_URL + '/v1/conversations/events';
-    var socket = io(MESSENGER_NS, {
-        path: '/v1/conversations/sockets',
-        transports: ['websocket'],
-        query: {
-            token: 'access_token',
-            user_id: '771',
-            user_role: 'BUYER'
-        }
-    });
+    var socket;
 
     const addParticipantsMessage = (data) => {
         var message = '';
@@ -90,9 +82,100 @@ $(function() {
             }
         };
 
+        socket = io(MESSENGER_NS, {
+            path: '/v1/conversations/sockets',
+            transports: ['websocket'],
+            query: {
+                token: 'access_token',
+                user_id: username,
+                user_role: role
+            }
+        });
+
         roomId = buyer + '.' + seller;
 
         console.log(data);
+
+        // Socket events
+
+        socket.on('connect', () => {
+            console.log(socket);
+        });
+
+        // get list of active users
+        socket.on('active_user_list', (data) => {
+            console.log('active_user_list:', data);
+        })
+
+        // on user status change
+        socket.on('change_user_status', (data) => {
+            console.log('change_user_status:', data);
+        })
+
+        // on create room
+        socket.on('create_room', room => {
+            console.log('created room: ', room);
+            connected = true;
+
+            // Display the welcome message
+            const { buyer, seller } = room;
+            var message = "buyer: " + buyer + ", seller: " + seller;
+            log(message, {
+                prepend: true
+            });
+            addParticipantsMessage({ numUsers: 1 });
+        });
+
+        // Whenever the server emits 'new_message', update the chat body
+        socket.on('new_message', (data) => {
+            console.log("receiving: ", data);
+            addChatMessage(data);
+        });
+
+        // On the other client have seen messages
+        socket.on('seen_messages', (data) => {
+            console.log(data);
+        })
+
+        // Whenever the server emits 'user joined', log it in the chat body
+        socket.on('user joined', (data) => {
+            log(data.username + ' joined');
+            addParticipantsMessage(data);
+        });
+
+        // Whenever the server emits 'user left', log it in the chat body
+        socket.on('user left', (data) => {
+            log(data.username + ' left');
+            addParticipantsMessage(data);
+            removeChatTyping(data);
+        });
+
+        // Whenever the server emits 'typing', show the typing message
+        socket.on('typing', (data) => {
+            addChatTyping(data);
+        });
+
+        // Whenever the server emits 'stop_typing', kill the typing message
+        socket.on('stop_typing', (data) => {
+            removeChatTyping(data);
+        });
+
+        socket.on('disconnect', () => {
+            console.log('disconnected!');
+            log('you have been disconnected');
+        });
+
+        socket.on('reconnect', () => {
+            log('you have been reconnected');
+            if (username) {
+                socket.emit('set usernames', { from: username, to: receiver });
+            }
+        });
+
+        socket.on('reconnect_error', () => {
+            log('attempt to reconnect has failed');
+        });
+
         // If the username is valid
         if (username) {
             $loginPage.fadeOut();
@@ -172,7 +255,7 @@ $(function() {
     // Removes the visual chat typing message
     const removeChatTyping = (data) => {
         console.log("stop_typing: ", data);
-        getTypingMessages(data).fadeOut(function() {
+        getTypingMessages(data).fadeOut(function () {
             $(this).remove();
         });
     }
@@ -242,7 +325,7 @@ $(function() {
 
     // Gets the 'X is typing' messages of a user
     const getTypingMessages = (data) => {
-        return $('.typing.message').filter(function(i) {
+        return $('.typing.message').filter(function (i) {
             return $(this).data('username') === data.from;
         });
     }
@@ -313,84 +396,84 @@ $(function() {
         });
     });
 
-    // Socket events
+    // // Socket events
 
-    socket.on('connect', () => {
-        console.log(socket);
-    });
+    // socket.on('connect', () => {
+    //     console.log(socket);
+    // });
 
-    // get list of active users
-    socket.on('active_user_list', (data) => {
-        console.log(data);
-    })
+    // // get list of active users
+    // socket.on('active_user_list', (data) => {
+    //     console.log(data);
+    // })
 
-    // on user status change
-    socket.on('change_user_status', (data) => {
-        console.log(data);
-    })
+    // // on user status change
+    // socket.on('change_user_status', (data) => {
+    //     console.log(data);
+    // })
 
-    // on create room
-    socket.on('create_room', room => {
-        console.log('created room: ', room);
-        connected = true;
+    // // on create room
+    // socket.on('create_room', room => {
+    //     console.log('created room: ', room);
+    //     connected = true;
 
-        // Display the welcome message
-        const { buyer, seller } = room;
-        var message = "buyer: " + buyer + ", seller: " + seller;
-        log(message, {
-            prepend: true
-        });
-        addParticipantsMessage({ numUsers: 1 });
-    });
+    //     // Display the welcome message
+    //     const { buyer, seller } = room;
+    //     var message = "buyer: " + buyer + ", seller: " + seller;
+    //     log(message, {
+    //         prepend: true
+    //     });
+    //     addParticipantsMessage({ numUsers: 1 });
+    // });
 
-    // Whenever the server emits 'new_message', update the chat body
-    socket.on('new_message', (data) => {
-        console.log("receiving: ", data);
-        addChatMessage(data);
-    });
+    // // Whenever the server emits 'new_message', update the chat body
+    // socket.on('new_message', (data) => {
+    //     console.log("receiving: ", data);
+    //     addChatMessage(data);
+    // });
 
-    // On the other client have seen messages
-    socket.on('seen_messages', (data) => {
-        console.log(data);
-    })
+    // // On the other client have seen messages
+    // socket.on('seen_messages', (data) => {
+    //     console.log(data);
+    // })
 
-    // Whenever the server emits 'user joined', log it in the chat body
-    socket.on('user joined', (data) => {
-        log(data.username + ' joined');
-        addParticipantsMessage(data);
-    });
+    // // Whenever the server emits 'user joined', log it in the chat body
+    // socket.on('user joined', (data) => {
+    //     log(data.username + ' joined');
+    //     addParticipantsMessage(data);
+    // });
 
-    // Whenever the server emits 'user left', log it in the chat body
-    socket.on('user left', (data) => {
-        log(data.username + ' left');
-        addParticipantsMessage(data);
-        removeChatTyping(data);
-    });
+    // // Whenever the server emits 'user left', log it in the chat body
+    // socket.on('user left', (data) => {
+    //     log(data.username + ' left');
+    //     addParticipantsMessage(data);
+    //     removeChatTyping(data);
+    // });
 
-    // Whenever the server emits 'typing', show the typing message
-    socket.on('typing', (data) => {
-        addChatTyping(data);
-    });
+    // // Whenever the server emits 'typing', show the typing message
+    // socket.on('typing', (data) => {
+    //     addChatTyping(data);
+    // });
 
-    // Whenever the server emits 'stop_typing', kill the typing message
-    socket.on('stop_typing', (data) => {
-        removeChatTyping(data);
-    });
+    // // Whenever the server emits 'stop_typing', kill the typing message
+    // socket.on('stop_typing', (data) => {
+    //     removeChatTyping(data);
+    // });
 
-    socket.on('disconnect', () => {
-        console.log('disconnected!');
-        log('you have been disconnected');
-    });
+    // socket.on('disconnect', () => {
+    //     console.log('disconnected!');
+    //     log('you have been disconnected');
+    // });
 
-    socket.on('reconnect', () => {
-        log('you have been reconnected');
-        if (username) {
-            socket.emit('set usernames', { from: username, to: receiver });
-        }
-    });
+    // socket.on('reconnect', () => {
+    //     log('you have been reconnected');
+    //     if (username) {
+    //         socket.emit('set usernames', { from: username, to: receiver });
+    //     }
+    // });
 
-    socket.on('reconnect_error', () => {
-        log('attempt to reconnect has failed');
-    });
+    // socket.on('reconnect_error', () => {
+    //     log('attempt to reconnect has failed');
+    // });
 
 });

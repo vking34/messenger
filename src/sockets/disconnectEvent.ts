@@ -8,10 +8,14 @@ export default (io: Server, socket: Socket) => {
     socket.on('disconnect', () => {
         let { user_id, user_role } = socket.handshake.query;
         console.log(user_id, 'disconnected!');
+        console.log('socket id:', socket.id);
+        
         socket.leave(user_id);
 
-        io.of(MESSENGER_NS).in(user_id).clients((_e, connections) => {
-            if (connections.length === 0) {
+        io.of(MESSENGER_NS).in(user_id).clients((_e, otherConnections) => {
+            console.log(otherConnections, otherConnections.length);
+            
+            if (otherConnections.length === 0) {
                 let condition: any = { enable: { $ne: false } };
                 let projection: any;
                 let sortOptions: any;
@@ -27,7 +31,7 @@ export default (io: Server, socket: Socket) => {
                 }
 
                 RoomModel.find(condition, projection, (_e, roomRecords) => {
-                    if (roomRecords) {
+                    if (roomRecords.length > 0) {
                         let target;
                         if (user_role === UserRole.BUYER) {
                             target = 'seller';

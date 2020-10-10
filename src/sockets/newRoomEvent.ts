@@ -15,7 +15,7 @@ export default (io: Server, socket: Socket) => {
         // test
         socket['user_id'] = room.creator;
         socket.join(room.creator);
-        console.log('user:', socket['user_id'], 'connected.');
+        // console.log('user:', socket['user_id'], 'connected.');
         //
 
         io.of(MESSENGER_NS).to(room.creator).emit('create_room', room);
