@@ -4,7 +4,7 @@
 - Nodejs: Runtime Environment
 - Express: Web framework
 - Socket.io: Socket library
-- Redis (for scalability): pub/sub messages and socket ids
+- Redis (for scalability): pub/sub events and socket ids between the instances.
 - MongoDB: Message store
 
 
@@ -111,7 +111,7 @@
                     - ```room_id```
                     - ```status```: Boolean
      
-     - ```change_user_status```:
+     - ```user_status_change```:
           - server:
                - ```user_id```
                - ```user_role```

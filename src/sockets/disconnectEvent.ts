@@ -39,7 +39,7 @@ export default (io: Server, socket: Socket) => {
                             const room_id = room._id;
                             io.of(MESSENGER_NS).in(room[target]).clients((_e_, clients) => {
                                 if (clients.length > 0) {
-                                    io.of(MESSENGER_NS).in(room[target]).emit('change_user_status', {
+                                    io.of(MESSENGER_NS).in(room[target]).emit('user_status_change', {
                                         user_id,
                                         user_role,
                                         room_id,

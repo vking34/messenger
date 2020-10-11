@@ -50,7 +50,7 @@ export default (io: Server, socket: Socket) => {
 
                               // send notification that this user is online
                               if (numOfSenderConnections < 2)
-                                   io.of(MESSENGER_NS).in(room[target]).emit('change_user_status', {
+                                   io.of(MESSENGER_NS).in(room[target]).emit('user_status_change', {
                                         user_id,
                                         user_role,
                                         room_id,
