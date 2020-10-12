@@ -1,4 +1,4 @@
-$(function () {
+$(function() {
     var FADE_TIME = 150; // ms
     var TYPING_TIMER_LENGTH = 400; // ms
     var COLORS = [
@@ -32,8 +32,8 @@ $(function () {
     var $receiver = $('.receiverId');
     var $sendBtn = $('#sendMsgBtn');
 
-    // const API_URL = 'https://api.chozoi.com';
-    const API_URL = 'http://localhost:3002';
+    const API_URL = 'https://api.chozoi.com';
+    // const API_URL = 'http://localhost:3002';
     const MESSENGER_NS = API_URL + '/v1/conversations/events';
     var socket;
 
@@ -255,7 +255,7 @@ $(function () {
     // Removes the visual chat typing message
     const removeChatTyping = (data) => {
         console.log("stop_typing: ", data);
-        getTypingMessages(data).fadeOut(function () {
+        getTypingMessages(data).fadeOut(function() {
             $(this).remove();
         });
     }
@@ -303,6 +303,7 @@ $(function () {
                 typing = true;
 
                 socket.emit('typing', {
+                    room_id: roomId,
                     from: username,
                     to: receiver
                 });
@@ -314,6 +315,7 @@ $(function () {
                 var timeDiff = typingTimer - lastTypingTime;
                 if (timeDiff >= TYPING_TIMER_LENGTH && typing) {
                     socket.emit('stop_typing', {
+                        room_id: roomId,
                         from: username,
                         to: receiver
                     });
@@ -325,7 +327,7 @@ $(function () {
 
     // Gets the 'X is typing' messages of a user
     const getTypingMessages = (data) => {
-        return $('.typing.message').filter(function (i) {
+        return $('.typing.message').filter(function(i) {
             return $(this).data('username') === data.from;
         });
     }
