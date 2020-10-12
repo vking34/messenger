@@ -32,8 +32,8 @@ $(function() {
     var $receiver = $('.receiverId');
     var $sendBtn = $('#sendMsgBtn');
 
-    const API_URL = 'https://api.chozoi.com';
-    // const API_URL = 'http://localhost:3002';
+    // const API_URL = 'https://api.chozoi.com';
+    const API_URL = 'http://localhost:3002';
     const MESSENGER_NS = API_URL + '/v1/conversations/events';
     var socket;
 
@@ -134,7 +134,7 @@ $(function() {
 
         // On the other client have seen messages
         socket.on('seen_messages', (data) => {
-            console.log(data);
+            console.log('on seen_messages', data);
         })
 
         // Whenever the server emits 'user joined', log it in the chat body
@@ -381,12 +381,11 @@ $(function() {
     // Focus input when clicking on the message input's border
     $inputMessage.click(() => {
         $inputMessage.focus();
-        console.log('seen...');
+
 
         // all unseen messages
-        var last_msg00 = messages[messages.length - 1];
-        console.log('last message', last_msg00);
-        console.log(username);
+        var last_msg = messages[messages.length - 1];
+        console.log('seen', last_msg);
         // if (last_msg00)
         //     if (last_msg00.from !== username)
 
@@ -394,7 +393,8 @@ $(function() {
             room_id: roomId,
             from: username,
             to: receiver,
-            message_ids: [last_msg00._id]
+            last_message_id: last_msg._id,
+            last_message_created_at: last_msg.created_at
         });
     });
 

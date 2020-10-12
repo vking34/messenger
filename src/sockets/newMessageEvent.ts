@@ -10,7 +10,7 @@ import RoomModel from '../models/room';
 
 export default (io: Server, socket: Socket) => {
      socket.on('new_message', (msg: MessageFormat) => {
-          console.log('new_message', msg);
+          // console.log('new_message', msg);
           const { from, to } = msg;
           msg._id = cuid();   // generate message id
           msg.created_at = new Date().toISOString();
@@ -33,8 +33,6 @@ export default (io: Server, socket: Socket) => {
                          to === room['seller'] ?
                               room['seller_unseen_messages']++ :
                               room['buyer_unseen_messages']++;
-
-                         console.log(room);
 
                          room.save();
                     })

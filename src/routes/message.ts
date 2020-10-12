@@ -12,7 +12,7 @@ router.get('/', async (req: Request, resp: Response) => {
      let sortOpt = { created_at: created_at === '1' ? 1 : -1 };
      let condition: any = { room_id };
      if (from) {
-          condition.created_at = { $lt: from.toString() }
+          condition.created_at = { $lte: from }
      }
 
      const data = await MessageModel
@@ -28,7 +28,7 @@ router.get('/', async (req: Request, resp: Response) => {
           },
           data
      });
-})
+});
 
 // Create message
 router.post('/', (req: Request, resp: Response) => {
@@ -72,5 +72,48 @@ router.put('/:id', (req: Request, resp: Response) => {
           });
 })
 
+
+// Get unseen messages
+router.get('/unseen', async (req: Request, resp: Response) => {
+     const { room_id, from, user_id, role } = req.query;
+     // let sortOpt = { created_at: created_at === '1' ? 1 : -1 };
+     let condition: any = { room_id, to: user_id, is_seen: false };
+     if (from) {
+          condition.created_at = { $lte: from }
+     }
+
+     console.log(user_id, role);
+     console.log('find condition:', condition);
+
+     const data = await MessageModel
+          .find(condition);
+
+     resp.send({
+          room_id: room_id,
+          filters: {
+               message_count: data.length,
+               from: from ? from : new Date()
+          },
+          data
+     });
+});
+
+
+// test mark many message as seen
+router.post('/unseen', (req: Request, resp: Response) => {
+     const { room_id, from, user_id } = req.body;
+     let condition: any = { room_id, to: user_id, is_seen: false };
+     if (from) {
+          condition.created_at = { $lte: from }
+     }
+
+     console.log(room_id, user_id)
+
+     MessageModel.updateMany(condition, { is_seen: true }).catch(_e => { });
+
+     resp.send({
+          status: true
+     });
+})
 
 export default router;

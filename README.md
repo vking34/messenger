@@ -95,13 +95,15 @@
                - ```room_id```: Room ID. Value: \<BuyerID\>.\<SellerID\>
                - ```from```: Sender ID
                - ```to```: Receiver ID
-               - ```message_ids```: An array of the seen messages 
+               - ```last_message_id```: ID of the last message
+               - ```last_message_created_at```: the created time of the last message
 
           - server:
                - ```room_id```: Room ID. Value: \<BuyerID\>.\<SellerID\>
                - ```from```: Sender ID
                - ```to```: Receiver ID
-               - ```message_ids```: An array of the seen messages 
+               - ```last_message_id```: ID of the last message
+               - ```last_message_created_at```: the created time of the last message
 
      - ```active_user_list```: get list of active users
           - server:
