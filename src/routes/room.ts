@@ -1,6 +1,7 @@
 import express, { Response, Request, Router } from 'express';
 import { RoomCreation } from '../interfaces/room';
 import RoomModel from '../models/room';
+import { MessageModel } from '../models/message';
 import { UserRole } from '../constants/user';
 import axios from 'axios';
 import { UserRequest } from '../interfaces/user';
@@ -162,7 +163,7 @@ router.put('/:room_id/seen', (req: Request, resp: Response) => {
      const room_id = req.params.room_id;
      const user: UserRequest = req.body;
 
-     RoomModel.findById(room_id, (_e, room) => {
+     RoomModel.findById(room_id, (_e, room: any) => {
           if (!room) {
                resp.status(400).send({
                     status: false,
@@ -176,16 +177,27 @@ router.put('/:room_id/seen', (req: Request, resp: Response) => {
                     message: 'The last message is yours!'
                });
 
-          if (!room['last_message']['is_seen'])
+          if (room['last_message']['is_seen'])
                resp.status(400).send({
                     status: false,
                     message: 'The last message is unseen!'
                });
 
           room['last_message']['is_seen'] = true;
-          room.save();
+          user.role === UserRole.BUYER ?
+               room.buyer_unseen_messages = 0 :
+               room.seller_unseen_messages = 0;
+
+          room.save({}, () => {
+               let findCondition: any = { room_id, to: user.user_id, created_at: { $lte: Date.now() }, is_seen: false };
+               MessageModel
+                    .updateMany(findCondition, { is_seen: true })
+                    .catch(_e => { });
+          });
+
           resp.send({
-               status: true
+               status: true,
+               room
           });
      })
 });
