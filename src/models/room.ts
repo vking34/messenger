@@ -34,7 +34,9 @@ const RoomSchema: Schema = new mongoose.Schema(
           seller_unseen_messages: {
                type: Number,
                default: 0
-          }
+          },
+          buyer_deleted_at: Date,
+          seller_deleted_at: Date
      },
      {
           timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }

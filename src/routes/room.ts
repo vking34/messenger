@@ -95,8 +95,6 @@ router.post('/', async (req: Request, resp: Response) => {
                          message: 'The room is existing!'
                     });
           }
-
-
      })
 });
 
@@ -159,7 +157,7 @@ router.delete('/:room_id/pin', async (req: Request, resp: Response) => {
      })
 })
 
-// mark as unseen room
+// mark as seen room
 router.put('/:room_id/seen', (req: Request, resp: Response) => {
      const room_id = req.params.room_id;
      const user: UserRequest = req.body;
@@ -195,18 +193,26 @@ router.put('/:room_id/seen', (req: Request, resp: Response) => {
 // delete room
 router.delete('/:room_id', (req: Request, resp: Response) => {
      const room_id = req.params.room_id;
+     const { role } = req.query;
 
-     RoomModel.findById(room_id, (_e, room) => {
+     RoomModel.findById(room_id, (_e, room: any) => {
           if (!room)
                resp.send({
                     status: false,
                     message: 'Room not found!'
                });
           else {
-               room['enable'] = false;
+               let now = new Date();
+
+               room.enable = false;
+               role === UserRole.BUYER ?
+                    room.buyer_deleted_at = now :
+                    room.seller_deleted_at = now;
                room.save();
+
                resp.send({
-                    status: true
+                    status: true,
+                    deleted_at: now
                });
           }
      });

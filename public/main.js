@@ -32,8 +32,8 @@ $(function() {
     var $receiver = $('.receiverId');
     var $sendBtn = $('#sendMsgBtn');
 
-    const API_URL = 'https://api.chozoi.com';
-    // const API_URL = 'http://localhost:3002';
+    // const API_URL = 'https://api.chozoi.com';
+    const API_URL = 'http://localhost:3002';
     const MESSENGER_NS = API_URL + '/v1/conversations/events';
     var socket;
 
@@ -108,8 +108,8 @@ $(function() {
         })
 
         // on user status change
-        socket.on('change_user_status', (data) => {
-            console.log('change_user_status:', data);
+        socket.on('user_status_change', (data) => {
+            console.log('user_status_change:', data);
         })
 
         // on create room
