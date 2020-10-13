@@ -14,33 +14,33 @@ const router: Router = express.Router();
 // get chat rooms
 router.get('', async (req: Request, resp: Response) => {
      let { user_id, role, name, pinned } = req.query;
-     let rooms, projection, sortOptions, condition = {};
+     let rooms, projection, sortOptions, condition: any = {};
 
-     condition['enable'] = { $ne: false };
+     condition.enable = { $ne: false };
      if (role === UserRole.BUYER) {
-          condition['buyer'] = user_id;
-          projection = { buyer_info: 0, pinned_by_seller: 0, seller_unseen_messages: 0 };
+          condition.buyer = user_id;
+          projection = { buyer_info: 0, pinned_by_seller: 0, seller_unseen_messages: 0, seller_deleted_at: 0 };
           sortOptions = { pinned_by_buyer: -1, 'last_message.created_at': -1 };
           if (name)
                condition['shop.name'] = { $regex: name, $options: 'i' }
 
           if (pinned) {
                pinned === '1' ?
-                    condition['pinned_by_buyer'] = { $exists: true } :
-                    condition['pinned_by_buyer'] = { $exists: false }
+                    condition.pinned_by_buyer = { $exists: true } :
+                    condition.pinned_by_buyer = { $exists: false }
           }
      }
      else {
-          condition['seller'] = user_id;
-          projection = { shop: 0, pinned_by_buyer: 0, buyer_unseen_messages: 0 };
+          condition.seller = user_id;
+          projection = { shop: 0, pinned_by_buyer: 0, buyer_unseen_messages: 0, buyer_deleted_at: 0 };
           sortOptions = { pinned_by_seller: -1, 'last_message.created_at': -1 };
           if (name)
                condition['buyer_info.name'] = { $regex: name, $options: 'i' }
 
           if (pinned) {
                pinned === '1' ?
-                    condition['pinned_by_buyer'] = { $exists: true } :
-                    condition['pinned_by_buyer'] = { $exists: false }
+                    condition.pinned_by_seller = { $exists: true } :
+                    condition.pinned_by_seller = { $exists: false }
           }
      }
 
