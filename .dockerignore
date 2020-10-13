@@ -1,0 +1,10 @@
+# git
+.git
+.gitignore
+
+# docker
+Dockerfile
+docker-compose.yml
+
+# dependencies
+node_modules
