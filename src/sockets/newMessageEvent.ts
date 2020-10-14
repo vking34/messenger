@@ -30,9 +30,12 @@ export default (io: Server, socket: Socket) => {
 
                     RoomModel.findById(msg.room_id, (_e, room) => {
                          room['last_message'] = message;
-                         to === room['seller'] ?
-                              room['seller_unseen_messages']++ :
+                         if (to === room['seller']) {
+                              room['seller_unseen_messages']++;
+                         }
+                         else {
                               room['buyer_unseen_messages']++;
+                         }
 
                          room.save();
                     })
