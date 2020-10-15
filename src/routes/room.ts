@@ -178,9 +178,9 @@ router.put('/:room_id/seen', (req: Request, resp: Response) => {
                });
 
           if (room['last_message']['is_seen'])
-               resp.status(400).send({
-                    status: false,
-                    message: 'The last message is unseen!'
+               resp.send({
+                    status: true,
+                    message: 'The last message is seen!'
                });
 
           room['last_message']['is_seen'] = true;
