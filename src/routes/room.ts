@@ -157,7 +157,7 @@ router.delete('/:room_id/pin', async (req: Request, resp: Response) => {
      })
 })
 
-// mark as seen room
+// mark room as seen
 router.put('/:room_id/seen', (req: Request, resp: Response) => {
      const room_id = req.params.room_id;
      const user: UserRequest = req.body;

@@ -24,8 +24,9 @@ export default (_io: Server, socket: Socket) => {
                     room['last_message']['is_seen'] = true;
                }
 
-               from === room['seller'] ?
-                    room['seller_unseen_messages'] = 0 :
+               if (from === room['seller'])
+                    room['seller_unseen_messages'] = 0;
+               else
                     room['buyer_unseen_messages'] = 0;
 
                room.save();
