@@ -183,8 +183,9 @@ router.put('/:room_id/seen', (req: Request, resp: Response) => {
                });
 
           room['last_message']['is_seen'] = true;
-          user.role === UserRole.BUYER ?
-               room.buyer_unseen_messages = 0 :
+          if (user.role === UserRole.BUYER)
+               room.buyer_unseen_messages = 0;
+          else
                room.seller_unseen_messages = 0;
 
           room.save({}, () => {
