@@ -25,9 +25,6 @@ export default (io: Server, socket: Socket) => {
                     is_seen: false
                })
                .then(message => {
-                    // RoomModel
-                    //      .updateOne({ _id: msg.room_id }, { last_message: message }, (_e, _r) => { });
-
                     RoomModel.findById(msg.room_id, (_e, room) => {
                          room['last_message'] = message;
                          if (to === room['seller']) {

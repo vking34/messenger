@@ -9,13 +9,12 @@ import axios from 'axios';
 export default (io: Server, socket: Socket) => {
 
     socket.on('create_room', (room: RoomCreation) => {
-        // console.log(room);
         room._id = room.buyer + '.' + room.seller;
 
         // test
+        // TODO: clear this in production
         socket['user_id'] = room.creator;
         socket.join(room.creator);
-        // console.log('user:', socket['user_id'], 'connected.');
         //
 
         io.of(MESSENGER_NS).to(room.creator).emit('create_room', room);
@@ -30,7 +29,7 @@ export default (io: Server, socket: Socket) => {
                         room.shop = {};
                     });
 
-                // need to check user_id in shop same to seller_id 
+                // TODO: need to check user_id in shop same to seller_id 
                 RoomModel.create(room).catch(_e => { });
             }
         });

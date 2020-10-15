@@ -101,6 +101,7 @@ router.get('/unseen', async (req: Request, resp: Response) => {
 
 
 // test mark many message as seen
+// TODO: clear this in production
 router.post('/unseen', (req: Request, resp: Response) => {
      const { room_id, from, user_id } = req.body;
      let condition: any = { room_id, to: user_id, is_seen: false };

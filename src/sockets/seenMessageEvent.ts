@@ -8,7 +8,6 @@ import RoomModel from '../models/room';
 export default (_io: Server, socket: Socket) => {
 
      socket.on('seen_messages', (data) => {
-          // console.log('seen messages: ', data);
           const { room_id, to, from, last_message_id, last_message_created_at } = data;
 
           socket.to(to).emit('seen_messages', data);
