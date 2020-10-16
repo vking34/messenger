@@ -28,7 +28,6 @@ const socketOptions = {
     cookiePath: false               // do not save cookie (up to usecase)
 }
 const io: Server = require('socket.io')(server, socketOptions);
-// const io: Server = require('socket.io')(server);
 io.adapter(redisAdapter(process.env.REDIS_ADDRESS));
 
 // socket middlewares

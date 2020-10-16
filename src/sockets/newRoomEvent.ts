@@ -13,8 +13,8 @@ export default (io: Server, socket: Socket) => {
 
         // test
         // TODO: clear this in production
-        socket['user_id'] = room.creator;
-        socket.join(room.creator);
+        // socket['user_id'] = room.creator;
+        // socket.join(room.creator);
         //
 
         io.of(MESSENGER_NS).to(room.creator).emit('create_room', room);
