@@ -234,6 +234,7 @@ router.delete('/:room_id', (req: Request, resp: Response) => {
                role === UserRole.BUYER ?
                     room.buyer_deleted_at = now :
                     room.seller_deleted_at = now;
+               room.last_message = {};
                room.save();
 
                resp.send({
