@@ -6,7 +6,6 @@ import { UserRole } from '../constants/user';
 import axios from 'axios';
 import { UserRequest } from '../interfaces/user';
 
-
 export const SHOP_SERVICE = process.env.SHOP_SERVICE + '/';
 const router: Router = express.Router();
 
@@ -237,11 +236,9 @@ router.delete('/:room_id', (req: Request, resp: Response) => {
                else {
                     room.seller_deleted_at = now;
                }
-
-               room['last_message'] = {};
+               delete room.last_message;
 
                room.save();
-
                resp.send({
                     status: true,
                     deleted_at: now
