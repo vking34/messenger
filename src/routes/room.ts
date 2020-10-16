@@ -231,9 +231,13 @@ router.delete('/:room_id', (req: Request, resp: Response) => {
                let now = new Date();
 
                room.enable = false;
-               role === UserRole.BUYER ?
-                    room.buyer_deleted_at = now :
+               if (role === UserRole.BUYER) {
+                    room.buyer_deleted_at = now;
+               }
+               else {
                     room.seller_deleted_at = now;
+               }
+
                room.last_message = {};
                room.save();
 
