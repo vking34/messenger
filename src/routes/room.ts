@@ -170,17 +170,31 @@ router.put('/:room_id/seen', (req: Request, resp: Response) => {
                });
           }
 
-          if (room['last_message']['from'] === user.user_id)
-               resp.status(400).send({
-                    status: false,
-                    message: 'The last message is yours!'
-               });
+          if (room['last_message']['from'] === user.user_id) {
+               // resp.status(400).send({
+               //      status: false,
+               //      message: 'The last message is yours!'
+               // });
 
-          if (room['last_message']['is_seen'])
                resp.send({
                     status: true,
-                    message: 'The last message is seen!'
+                    room
                });
+          }
+
+
+          if (room['last_message']['is_seen']) {
+               // resp.send({
+               //      status: true,
+               //      message: 'The last message is seen!'
+               // });
+
+               resp.send({
+                    status: true,
+                    room
+               });
+          }
+
 
           room['last_message']['is_seen'] = true;
           if (user.role === UserRole.BUYER)
