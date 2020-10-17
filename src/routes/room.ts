@@ -237,7 +237,7 @@ router.delete('/:room_id', (req: Request, resp: Response) => {
                else {
                     room.seller_deleted_at = now;
                }
-               delete room.last_message;
+               room.last_message = undefined;
 
                room.save();
                resp.send({
