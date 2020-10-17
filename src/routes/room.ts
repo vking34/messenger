@@ -203,12 +203,11 @@ router.put('/:room_id/seen', (req: Request, resp: Response) => {
                room.seller_unseen_messages = 0;
           }
 
-          room.save({}, () => {
-               let findCondition: any = { room_id, to: user.user_id, created_at: { $lte: Date.now() }, is_seen: false };
-               MessageModel
-                    .updateMany(findCondition, { is_seen: true })
-                    .catch(_e => { });
-          });
+          room.save();
+          let findCondition: any = { room_id, to: user.user_id, created_at: { $lte: Date.now() }, is_seen: false };
+          MessageModel
+               .updateMany(findCondition, { is_seen: true })
+               .catch(_e => { });
 
           resp.send({
                status: true,
