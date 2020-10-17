@@ -15,11 +15,12 @@ router.get('', async (req: Request, resp: Response) => {
      let { user_id, role, name, pinned } = req.query;
      let rooms, projection, sortOptions, condition: any = {};
 
-     condition.enable = { $ne: false };
+     // condition.enable = { $ne: false };
      if (role === UserRole.BUYER) {
           condition.buyer = user_id;
-          projection = { buyer_info: 0, pinned_by_seller: 0, seller_unseen_messages: 0, seller_deleted_at: 0 };
-          sortOptions = { pinned_by_buyer: -1, 'last_message.created_at': -1 };
+          condition.deleted_by_buyer = { $ne: true };
+          projection = { enable: 0, buyer_info: 0, pinned_by_seller: 0, seller_unseen_messages: 0, seller_deleted_at: 0, deleted_by_buyer: 0, deleted_by_seller: 0 };
+          sortOptions = { pinned_by_buyer: -1, 'buyer_last_message.created_at': -1 };
           if (name)
                condition['shop.name'] = { $regex: name, $options: 'i' }
 
@@ -31,8 +32,9 @@ router.get('', async (req: Request, resp: Response) => {
      }
      else {
           condition.seller = user_id;
-          projection = { shop: 0, pinned_by_buyer: 0, buyer_unseen_messages: 0, buyer_deleted_at: 0 };
-          sortOptions = { pinned_by_seller: -1, 'last_message.created_at': -1 };
+          condition.deleted_by_seller = { $ne: true };
+          projection = { enable: 0, shop: 0, pinned_by_buyer: 0, buyer_unseen_messages: 0, buyer_deleted_at: 0, deleted_by_buyer: 0, deleted_by_seller: 0 };
+          sortOptions = { pinned_by_seller: -1, 'seller_last_message.created_at': -1 };
           if (name)
                condition['buyer_info.name'] = { $regex: name, $options: 'i' }
 
@@ -55,44 +57,52 @@ router.get('', async (req: Request, resp: Response) => {
 // create room
 router.post('/', async (req: Request, resp: Response) => {
      // console.log('shop service:', SHOP_SERVICE);
-     const room: RoomCreation = req.body;
-     if (room.buyer === room.seller)
+     const roomRequest: RoomCreation = req.body;
+     if (roomRequest.buyer === roomRequest.seller)
           resp.send({
                status: false,
                message: 'Buyer is the same to seller'
           });
 
-     room._id = room.buyer + '.' + room.seller;
-
-     RoomModel.findById(room._id, async (_e, record) => {
-          if (!record) {
+     roomRequest._id = roomRequest.buyer + '.' + roomRequest.seller;
+     RoomModel.findById(roomRequest._id, async (_e, roomRecord: any) => {
+          if (!roomRecord) {
                // need to check user_id in shop same to seller_id 
-               let shopResponse = await axios.get(SHOP_SERVICE + room.shop_id);
-               room.shop = shopResponse.data;
+               let shopResponse = await axios.get(SHOP_SERVICE + roomRequest.shop_id);
+               roomRequest.shop = shopResponse.data;
                resp.send({
                     status: true,
                     message: 'Created room successfully!',
-                    room
+                    room: roomRequest
                });
 
-               RoomModel.create(room).catch(_e => { });
+               RoomModel.create(roomRequest).catch(_e => { });
           }
           else {
-               if (record['enable'] === false) {
-                    record['enable'] = true;
-                    record.save();
-                    resp.send({
-                         status: true,
-                         message: 'Created room successfully!',
-                         room
-                    });
-               }
-               else
-                    resp.send({
-                         status: false,
-                         room_id: room._id,
-                         message: 'The room is existing!'
-                    });
+               // if (roomRecord['enable'] === false) {
+               //      roomRecord['enable'] = true;
+               //      roomRecord.save();
+               //      resp.send({
+               //           status: true,
+               //           message: 'Created room successfully!',
+               //           room
+               //      });
+               // }
+               // else
+               //      resp.send({
+               //           status: false,
+               //           room_id: room._id,
+               //           message: 'The room is existing!'
+               //      });
+
+               roomRecord.deleted_by_buyer = false;
+               roomRecord.deleted_by_seller = false;
+               roomRecord.save();
+               resp.send({
+                    status: true,
+                    message: 'Created room successfully!',
+                    room: roomRecord
+               });
           }
      })
 });
@@ -169,12 +179,7 @@ router.put('/:room_id/seen', (req: Request, resp: Response) => {
                });
           }
 
-          if (room['last_message']['from'] === user.user_id) {
-               // resp.status(400).send({
-               //      status: false,
-               //      message: 'The last message is yours!'
-               // });
-
+          if (room?.buyer_last_message.from === user.user_id) {
                resp.send({
                     status: true,
                     room
@@ -182,25 +187,32 @@ router.put('/:room_id/seen', (req: Request, resp: Response) => {
           }
 
 
-          if (room['last_message']['is_seen']) {
-               // resp.send({
-               //      status: true,
-               //      message: 'The last message is seen!'
-               // });
-
-               resp.send({
-                    status: true,
-                    room
-               });
-          }
-
-
-          room['last_message']['is_seen'] = true;
           if (user.role === UserRole.BUYER) {
                room.buyer_unseen_messages = 0;
+
+               if (room?.buyer_last_message.is_seen) {
+                    resp.send({
+                         status: true,
+                         room
+                    });
+               }
+               else if (room.buyer_last_message.is_seen) {
+                    room.buyer_last_message.is_seen = true;
+               }
+
           }
           else {
                room.seller_unseen_messages = 0;
+
+               if (room?.seller_last_message.is_seen) {
+                    resp.send({
+                         status: true,
+                         room
+                    });
+               }
+               else if (room.seller_last_message.is_seen) {
+                    room.seller_last_message.is_seen = true;
+               }
           }
 
           room.save();
@@ -230,18 +242,22 @@ router.delete('/:room_id', (req: Request, resp: Response) => {
           else {
                let now = new Date();
 
-               room.enable = false;
+               // room.enable = false;
                if (role === UserRole.BUYER) {
+                    room.deleted_by_buyer = true;
                     room.buyer_deleted_at = now;
+                    room.buyer_last_message = undefined;
                }
                else {
+                    room.deleted_by_seller = true;
                     room.seller_deleted_at = now;
+                    room.seller_last_message = undefined;
                }
-               room.last_message = undefined;
 
                room.save();
                resp.send({
                     status: true,
+                    role,
                     deleted_at: now
                });
           }

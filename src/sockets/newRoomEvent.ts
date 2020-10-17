@@ -19,8 +19,8 @@ export default (io: Server, socket: Socket) => {
 
         io.of(MESSENGER_NS).to(room.creator).emit('create_room', room);
 
-        RoomModel.findById(room._id, async (_e, record) => {
-            if (!record) {
+        RoomModel.findById(room._id, async (_e, roomRecord: any) => {
+            if (!roomRecord) {
                 await axios.get(SHOP_SERVICE + room.shop_id)
                     .then(response => {
                         room.shop = response.data;
@@ -31,6 +31,11 @@ export default (io: Server, socket: Socket) => {
 
                 // TODO: need to check user_id in shop same to seller_id 
                 RoomModel.create(room).catch(_e => { });
+            }
+            else {
+                roomRecord.deleted_by_buyer = false;
+                roomRecord.deleted_by_seller = false;
+                roomRecord.save();
             }
         });
     });

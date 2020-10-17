@@ -19,15 +19,18 @@ export default (_io: Server, socket: Socket) => {
                .catch(_e => { });
 
           // update the last message in the room
-          RoomModel.findById(room_id, (_e, room) => {
-               if (room['last_message']['_id'] === last_message_id) {
-                    room['last_message']['is_seen'] = true;
+          RoomModel.findById(room_id, (_e, room: any) => {
+               if (from === room?.seller) {
+                    room.seller_unseen_messages = 0;
+               }
+               else {
+                    room.buyer_unseen_messages = 0;
                }
 
-               if (from === room['seller'])
-                    room['seller_unseen_messages'] = 0;
-               else
-                    room['buyer_unseen_messages'] = 0;
+               if (room?.buyer_last_message._id === last_message_id) {
+                    room.buyer_last_message.is_seen = true;
+                    room.seller_last_message.is_seen = true;
+               }
 
                room.save();
           });

@@ -13,7 +13,8 @@ const RoomSchema: Schema = new mongoose.Schema(
           creator: String,
           buyer: String,
           seller: String,
-          last_message: MessageSchema,
+          buyer_last_message: MessageSchema,
+          seller_last_message: MessageSchema,
           shop: Object,
           buyer_info: {
                name: String,
@@ -36,7 +37,15 @@ const RoomSchema: Schema = new mongoose.Schema(
                default: 0
           },
           buyer_deleted_at: Date,
-          seller_deleted_at: Date
+          deleted_by_buyer: {
+               type: Boolean,
+               default: false
+          },
+          seller_deleted_at: Date,
+          deleted_by_seller: {
+               type: Boolean,
+               default: false
+          }
      },
      {
           timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
