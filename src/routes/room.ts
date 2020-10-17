@@ -196,10 +196,12 @@ router.put('/:room_id/seen', (req: Request, resp: Response) => {
 
 
           room['last_message']['is_seen'] = true;
-          if (user.role === UserRole.BUYER)
+          if (user.role === UserRole.BUYER) {
                room.buyer_unseen_messages = 0;
-          else
+          }
+          else {
                room.seller_unseen_messages = 0;
+          }
 
           room.save({}, () => {
                let findCondition: any = { room_id, to: user.user_id, created_at: { $lte: Date.now() }, is_seen: false };
