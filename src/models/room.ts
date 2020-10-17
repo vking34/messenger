@@ -24,10 +24,10 @@ const RoomSchema: Schema = new mongoose.Schema(
           },
           pinned_by_buyer: Date,
           pinned_by_seller: Date,
-          enable: {
-               type: Boolean,
-               default: true
-          },
+          // enable: {
+          //      type: Boolean,
+          //      default: true
+          // },
           buyer_unseen_messages: {
                type: Number,
                default: 0

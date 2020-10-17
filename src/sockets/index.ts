@@ -1,7 +1,7 @@
 import { server } from '../app';
 import { Server, Socket } from 'socket.io';
 import redisAdapter from 'socket.io-redis';
-
+// import {SocketEvents} from '../constants/socket';
 export const MESSENGER_NS = process.env.MESSENGER_NAMESPACE;
 
 import scanActiveUsers from './scanActiveUsers';
@@ -51,6 +51,14 @@ io.of(MESSENGER_NS).use((socket: Socket, next) => {
     }
 });
 
+// export const emitUserStatusChangeEvent = (sender: string, receiver: string, user_role: string, room_id: string, status: boolean) => {
+//     io.of(MESSENGER_NS).in(receiver).emit(SocketEvents.USER_STATUS_CHANGE_EVENT, {
+//         user_id: sender,
+//         user_role,
+//         room_id,
+//         status
+//     })
+// }
 
 // socket events
 export default io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
@@ -79,3 +87,4 @@ export default io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
     // scan active users
     scanActiveUsers(io, socket);
 });
+

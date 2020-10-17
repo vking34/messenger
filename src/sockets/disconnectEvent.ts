@@ -3,6 +3,7 @@ import { UserRole } from "../constants/user";
 import RoomModel from '../models/room';
 import { MESSENGER_NS } from './index';
 
+const USER_STATUS_CHANGE_EVENT: string = 'user_status_change';
 
 export default (io: Server, socket: Socket) => {
     socket.on('disconnect', () => {
@@ -15,18 +16,20 @@ export default (io: Server, socket: Socket) => {
         io.of(MESSENGER_NS).in(user_id).clients((_e, otherConnections) => {
             // console.log(otherConnections, otherConnections.length);
             if (otherConnections.length === 0) {
-                let condition: any = { enable: { $ne: false } };
+                let condition: any = {};
                 let projection: any;
                 let sortOptions: any;
                 if (user_role === UserRole.BUYER) {
                     condition.buyer = user_id;
+                    condition.deleted_by_buyer = { $ne: true };
                     projection = { buyer_info: 0, pinned_by_seller: 0, seller_unseen_messages: 0 };
-                    sortOptions = { pinned_by_buyer: -1, 'last_message.created_at': -1 };
+                    sortOptions = { pinned_by_buyer: -1, 'buyer_last_message.created_at': -1 };
                 }
                 else {
                     condition.seller = user_id;
+                    condition.deleted_by_seller = { $ne: true };
                     projection = { shop: 0, pinned_by_buyer: 0, buyer_unseen_messages: 0 };
-                    sortOptions = { pinned_by_seller: -1, 'last_message.created_at': -1 };
+                    sortOptions = { pinned_by_seller: -1, 'seller_last_message.created_at': -1 };
                 }
 
                 RoomModel.find(condition, projection, (_e, roomRecords) => {
@@ -38,7 +41,7 @@ export default (io: Server, socket: Socket) => {
                             const room_id = room._id;
                             io.of(MESSENGER_NS).in(room[target]).clients((_e_, clients) => {
                                 if (clients.length > 0) {
-                                    io.of(MESSENGER_NS).in(room[target]).emit('user_status_change', {
+                                    io.of(MESSENGER_NS).in(room[target]).emit(USER_STATUS_CHANGE_EVENT, {
                                         user_id,
                                         user_role,
                                         room_id,

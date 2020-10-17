@@ -7,18 +7,20 @@ import { RoomStatus, StatusRoomList } from '../interfaces/room';
 export default (io: Server, socket: Socket) => {
      let { user_id, user_role } = socket.handshake.query;
      let numOfSenderConnections: number;
-     let condition: any = { enable: { $ne: false } };
+     let condition: any = {};
      let projection: any;
      let sortOptions: any;
      if (user_role === UserRole.BUYER) {
           condition.buyer = user_id;
+          condition.deleted_by_buyer = { $ne: true };
           projection = { buyer_info: 0, pinned_by_seller: 0, seller_unseen_messages: 0 };
-          sortOptions = { pinned_by_buyer: -1, 'last_message.created_at': -1 };
+          sortOptions = { pinned_by_buyer: -1, 'buyer_last_message.created_at': -1 };
      }
      else {
           condition.seller = user_id;
+          condition.deleted_by_seller = { $ne: true };
           projection = { shop: 0, pinned_by_buyer: 0, buyer_unseen_messages: 0 };
-          sortOptions = { pinned_by_seller: -1, 'last_message.created_at': -1 };
+          sortOptions = { pinned_by_seller: -1, 'seller_last_message.created_at': -1 };
      }
 
      // get number of connections belonging to sender
@@ -44,7 +46,7 @@ export default (io: Server, socket: Socket) => {
                     }
 
                     // check if user is online
-                    io.of(MESSENGER_NS).in(room[target]).clients((_e_, receiverConnections) => {
+                    io.of(MESSENGER_NS).in(room[target]).clients((_e, receiverConnections) => {
                          if (receiverConnections.length > 0) {
                               roomStatus.status = true;
 

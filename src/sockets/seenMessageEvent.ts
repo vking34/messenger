@@ -26,10 +26,11 @@ export default (_io: Server, socket: Socket) => {
                else {
                     room.buyer_unseen_messages = 0;
                }
-
-               if (room?.buyer_last_message._id === last_message_id ||
-                    room.seller_last_message._id === last_message_id) {
+               
+               if (room?.buyer_last_message?._id === last_message_id) {
                     room.buyer_last_message.is_seen = true;
+               }
+               if (room?.seller_last_message?._id === last_message_id) {
                     room.seller_last_message.is_seen = true;
                }
 
