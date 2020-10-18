@@ -7,16 +7,16 @@ import { MESSENGER_NS } from './index';
 import { MessageModel } from '../models/message';
 import RoomModel from '../models/room';
 
-
+const NEW_MESSAGE_EVENT = 'new_message';
 export default (io: Server, socket: Socket) => {
-     socket.on('new_message', (msg: MessageFormat) => {
-          // console.log('new_message', msg);
+     socket.on(NEW_MESSAGE_EVENT, (msg: MessageFormat) => {
+          // console.log(NEW_MESSAGE_EVENT, msg);
           const { from, to } = msg;
           msg._id = cuid();   // generate message id
           msg.created_at = new Date().toISOString();
 
-          io.of(MESSENGER_NS).in(from).emit('new_message', msg);
-          io.of(MESSENGER_NS).in(to).emit('new_message', msg);
+          io.of(MESSENGER_NS).in(from).emit(NEW_MESSAGE_EVENT, msg);
+          io.of(MESSENGER_NS).in(to).emit(NEW_MESSAGE_EVENT, msg);
 
           msg.updated_at = msg.created_at;
           MessageModel

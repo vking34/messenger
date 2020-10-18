@@ -4,13 +4,13 @@ import { Server, Socket } from "socket.io";
 import { MessageModel } from '../models/message';
 import RoomModel from '../models/room';
 
-
+const SEEN_MESSAGES_EVENT = 'seen_messages';
 export default (_io: Server, socket: Socket) => {
 
-     socket.on('seen_messages', (data) => {
+     socket.on(SEEN_MESSAGES_EVENT, (data) => {
           const { room_id, to, from, last_message_id, last_message_created_at } = data;
 
-          socket.to(to).emit('seen_messages', data);
+          socket.to(to).emit(SEEN_MESSAGES_EVENT, data);
 
           // update messages in the message collection
           let condition: any = { room_id, to: from, created_at: { $lte: last_message_created_at }, is_seen: false };

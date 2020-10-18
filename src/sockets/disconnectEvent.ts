@@ -2,19 +2,15 @@ import { Server, Socket } from "socket.io";
 import { UserRole } from "../constants/user";
 import RoomModel from '../models/room';
 import { MESSENGER_NS } from './index';
-
-const USER_STATUS_CHANGE_EVENT: string = 'user_status_change';
+import { USER_STATUS_CHANGE_EVENT } from './userStatusChangeEvent';
 
 export default (io: Server, socket: Socket) => {
     socket.on('disconnect', () => {
         let { user_id, user_role } = socket.handshake.query;
-        // console.log(user_id, 'disconnected!');
-        // console.log('socket id:', socket.id);
 
         socket.leave(user_id);
 
         io.of(MESSENGER_NS).in(user_id).clients((_e, otherConnections) => {
-            // console.log(otherConnections, otherConnections.length);
             if (otherConnections.length === 0) {
                 let condition: any = {};
                 let projection: any;

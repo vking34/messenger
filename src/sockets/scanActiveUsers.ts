@@ -3,7 +3,9 @@ import { UserRole } from "../constants/user";
 import RoomModel from '../models/room';
 import { MESSENGER_NS } from './index';
 import { RoomStatus, StatusRoomList } from '../interfaces/room';
+import { USER_STATUS_CHANGE_EVENT } from './userStatusChangeEvent';
 
+const ACTIVE_USER_LIST_EVENT = 'active_user_list';
 export default (io: Server, socket: Socket) => {
      let { user_id, user_role } = socket.handshake.query;
      let numOfSenderConnections: number;
@@ -52,7 +54,7 @@ export default (io: Server, socket: Socket) => {
 
                               // send notification that this user is online
                               if (numOfSenderConnections < 2)
-                                   io.of(MESSENGER_NS).in(room[target]).emit('user_status_change', {
+                                   io.of(MESSENGER_NS).in(room[target]).emit(USER_STATUS_CHANGE_EVENT, {
                                         user_id,
                                         user_role,
                                         room_id,
@@ -62,7 +64,7 @@ export default (io: Server, socket: Socket) => {
 
                          data.rooms.push(roomStatus);
                          if (index === roomRecords.length - 1)
-                              io.of(MESSENGER_NS).to(user_id).emit('active_user_list', data);
+                              io.of(MESSENGER_NS).to(user_id).emit(ACTIVE_USER_LIST_EVENT, data);
                     });
                });
           }

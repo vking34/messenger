@@ -1,8 +1,8 @@
 import { Server, Socket } from "socket.io";
 
+const VERIFY_USER_EVENT = 'verify_user';
 export default (_io: Server, socket: Socket) => {
-
-     socket.on('verify_user', (data) => {
+     socket.on(VERIFY_USER_EVENT, (data) => {
           const { token, user_id, user_role } = data;
 
           if (token) {
@@ -14,10 +14,10 @@ export default (_io: Server, socket: Socket) => {
                // mark user role 
                socket['user_role'] = user_role;
 
-               socket.emit('verify_user', {status: true});
+               socket.emit(VERIFY_USER_EVENT, {status: true});
           }
           else {
-               socket.emit('verify_user', {status: false});
+               socket.emit(VERIFY_USER_EVENT, {status: false});
                socket.disconnect();
           }
      });
