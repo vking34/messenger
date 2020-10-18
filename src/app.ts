@@ -6,12 +6,7 @@ import bodyParser from 'body-parser';
 import monogoose from 'mongoose';
 import cors from 'cors';
 
-// routes
-import roomRoute from './routes/room';
-import messageRoute from './routes/message';
-
 // configs
-// require('dotenv').config();
 const port = process.env.PORT || 3000;
 const app = express();
 export const server = http.createServer(app);
@@ -29,29 +24,17 @@ app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(cors());
 
-// routes
-app.use('/v1/conversations/rooms', roomRoute);
-app.use('/v1/conversations/messages', messageRoute);
-
 // sockets
 require('./sockets/index');
+
+// routes
+import messageRoute from './routes/message';
+import roomRoute from './routes/room';
+
+app.use('/v1/conversations/rooms', roomRoute);
+app.use('/v1/conversations/messages', messageRoute);
 
 // start server
 server.listen(port, () => {
     console.log('Server listening at port %d', port);
 });
-
-
-
-
-
-
-// const cleanUpServer = async (options, exitCode) => {
-//     console.log(options);
-//     console.log(exitCode);
-//     await redisClient.flushallAsync('ASYNC');
-// }
-
-// ['exit', 'SIGTERM'].forEach((eventType) => {
-//     process.on(eventType, cleanUpServer.bind(null, eventType));
-// })

@@ -31,7 +31,6 @@
         "@types/node": "^14.11.1",
         "@types/socket.io": "^2.1.11",
         "cors": "^2.8.5",
-        "dotenv": "^8.2.0",
         "morgan": "^1.10.0",
         "nodemon": "^2.0.4",
         "ts-node": "^9.0.0",

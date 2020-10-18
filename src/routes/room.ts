@@ -5,7 +5,7 @@ import { MessageModel } from "../models/message";
 import { UserRole } from "../constants/user";
 import axios from "axios";
 import { UserRequest } from "../interfaces/user";
-// import { emitUserStatusChangeEvent } from "../sockets/index";
+import emitUserStatusChangeEvent from "../sockets/userStatusChangeEvent";
 
 export const SHOP_SERVICE = process.env.SHOP_SERVICE + "/";
 const router: Router = express.Router();
@@ -259,12 +259,12 @@ router.delete("/:room_id", (req: Request, resp: Response) => {
                     room.deleted_by_buyer = true;
                     room.buyer_deleted_at = now;
                     room.buyer_last_message = undefined;
-                    // emitUserStatusChangeEvent(room.buyer, room.seller, UserRole.BUYER, room._id, false);
+                    emitUserStatusChangeEvent(room.buyer, room.seller, UserRole.BUYER, room._id, false);
                } else {
                     room.deleted_by_seller = true;
                     room.seller_deleted_at = now;
                     room.seller_last_message = undefined;
-                    // emitUserStatusChangeEvent(room.seller, room.buyer, UserRole.SELLER, room._id, false);
+                    emitUserStatusChangeEvent(room.seller, room.buyer, UserRole.SELLER, room._id, false);
                }
 
                room.save();

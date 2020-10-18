@@ -102,18 +102,18 @@ router.get('/unseen', async (req: Request, resp: Response) => {
 
 // test mark many message as seen
 // TODO: clear this in production
-router.post('/unseen', (req: Request, resp: Response) => {
-     const { room_id, from, user_id } = req.body;
-     let condition: any = { room_id, to: user_id, is_seen: false };
-     if (from)
-          condition.created_at = { $lte: from }
+// router.post('/unseen', (req: Request, resp: Response) => {
+//      const { room_id, from, user_id } = req.body;
+//      let condition: any = { room_id, to: user_id, is_seen: false };
+//      if (from)
+//           condition.created_at = { $lte: from }
 
 
-     MessageModel.updateMany(condition, { is_seen: true }).catch(_e => { });
+//      MessageModel.updateMany(condition, { is_seen: true }).catch(_e => { });
 
-     resp.send({
-          status: true
-     });
-})
+//      resp.send({
+//           status: true
+//      });
+// })
 
 export default router;

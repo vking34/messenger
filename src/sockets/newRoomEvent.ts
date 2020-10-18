@@ -10,27 +10,20 @@ export default (io: Server, socket: Socket) => {
 
     socket.on('create_room', (room: RoomCreation) => {
         room._id = room.buyer + '.' + room.seller;
-
-        // test
-        // TODO: clear this in production
-        // socket['user_id'] = room.creator;
-        // socket.join(room.creator);
-        //
-
         io.of(MESSENGER_NS).to(room.creator).emit('create_room', room);
 
-        RoomModel.findById(room._id, async (_e, roomRecord: any) => {
+        RoomModel.findById(room._id, (_e, roomRecord: any) => {
             if (!roomRecord) {
-                await axios.get(SHOP_SERVICE + room.shop_id)
+                axios.get(SHOP_SERVICE + room.shop_id)
                     .then(response => {
                         room.shop = response.data;
+
+                        // TODO: need to check user_id in shop same to seller_id 
+                        RoomModel.create(room).catch(_e => { });
                     })
                     .catch(_e => {
                         room.shop = {};
                     });
-
-                // TODO: need to check user_id in shop same to seller_id 
-                RoomModel.create(room).catch(_e => { });
             }
             else {
                 roomRecord.deleted_by_buyer = false;
