@@ -6,6 +6,7 @@ import { UserRole } from "../constants/user";
 import axios from "axios";
 import { UserRequest } from "../interfaces/user";
 import emitUserStatusChangeEvent from "../sockets/userStatusChangeEvent";
+import { ROOM_NOT_FOUND } from '../constants/response';
 
 export const SHOP_SERVICE = process.env.SHOP_SERVICE + "/";
 const router: Router = express.Router();
@@ -13,7 +14,7 @@ const router: Router = express.Router();
 // get chat rooms
 router.get("", async (req: Request, resp: Response) => {
      let { user_id, role, name, pinned } = req.query;
-     let  rooms,
+     let rooms,
           projection,
           sortOptions,
           condition: any = {};
@@ -124,36 +125,59 @@ router.post("/", async (req: Request, resp: Response) => {
      });
 });
 
+// re-enable room
+router.put('/:room_id/enable', (req: Request, resp: Response) => {
+     const room_id: string = req.params.room_id;
+     const { role } = req.body;
+
+     RoomModel.findById(room_id, (_e, room: any) => {
+          if (!room) {
+               resp.status(400).send(ROOM_NOT_FOUND);
+          }
+          else {
+               if (role === UserRole.BUYER)
+                    room.deleted_by_buyer = false;
+               else
+                    room.deleted_by_seller = false;
+
+               room.save();
+               resp.send({
+                    status: true,
+                    message: 'Enable room successfully!',
+                    room
+               });
+          }
+     });
+})
+
 // pin room
 router.post("/:room_id/pin", async (req: Request, resp: Response) => {
      const room_id = req.params.room_id;
 
      let room = await RoomModel.findById(room_id, (_e) => { });
      if (!room) {
-          resp.status(400).send({
-               status: false,
-               message: "Room not found!",
-          });
+          resp.status(400).send(ROOM_NOT_FOUND);
      }
+     else {
+          const user: UserRequest = req.body;
+          let pin;
+          let now = Date.now();
+          if (user.role === UserRole.BUYER) pin = { pinned_by_buyer: now };
+          else pin = { pinned_by_seller: now };
 
-     const user: UserRequest = req.body;
-     let pin;
-     let now = Date.now();
-     if (user.role === UserRole.BUYER) pin = { pinned_by_buyer: now };
-     else pin = { pinned_by_seller: now };
-
-     RoomModel.updateOne({ _id: room_id }, pin)
-          .then((_data) =>
-               resp.send({
-                    status: true,
-               })
-          )
-          .catch((e) =>
-               resp.status(400).send({
-                    status: false,
-                    message: e,
-               })
-          );
+          RoomModel.updateOne({ _id: room_id }, pin)
+               .then((_data) =>
+                    resp.send({
+                         status: true,
+                    })
+               )
+               .catch((e) =>
+                    resp.status(400).send({
+                         status: false,
+                         message: e,
+                    })
+               );
+     }
 });
 
 // unpin room
@@ -163,20 +187,18 @@ router.delete("/:room_id/pin", async (req: Request, resp: Response) => {
 
      RoomModel.findById(room_id, (_e, room) => {
           if (!room) {
-               resp.status(400).send({
-                    status: false,
-                    message: "Room not found!",
+               resp.status(400).send(ROOM_NOT_FOUND);
+          }
+          else {
+               if (user.role === UserRole.BUYER) room["pinned_by_buyer"] = undefined;
+               else room["pinned_by_seller"] = undefined;
+
+               room.save();
+               resp.send({
+                    status: true,
+                    room,
                });
           }
-
-          if (user.role === UserRole.BUYER) room["pinned_by_buyer"] = undefined;
-          else room["pinned_by_seller"] = undefined;
-
-          room.save();
-          resp.send({
-               status: true,
-               room,
-          });
      });
 });
 
@@ -187,10 +209,7 @@ router.put("/:room_id/seen", (req: Request, resp: Response) => {
 
      RoomModel.findById(room_id, (_e, room: any) => {
           if (!room) {
-               resp.status(400).send({
-                    status: false,
-                    message: "Room not found!",
-               });
+               resp.status(400).send(ROOM_NOT_FOUND);
           }
 
           if (room?.buyer_last_message.from === user.user_id) {
@@ -247,10 +266,7 @@ router.delete("/:room_id", (req: Request, resp: Response) => {
 
      RoomModel.findById(room_id, (_e, room: any) => {
           if (!room)
-               resp.send({
-                    status: false,
-                    message: "Room not found!",
-               });
+               resp.send(ROOM_NOT_FOUND);
           else {
                let now = new Date();
 
