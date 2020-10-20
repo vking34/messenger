@@ -96,31 +96,30 @@ router.post("/", async (req: Request, resp: Response) => {
                     });
 
                     RoomModel.create(roomRequest).catch((_e) => { });
-               } else {
-                    // if (room['enable'] === false) {
-                    //      room['enable'] = true;
-                    //      room.save();
-                    //      resp.send({
-                    //           status: true,
-                    //           message: 'Created room successfully!',
-                    //           room
-                    //      });
-                    // }
-                    // else
-                    //      resp.send({
-                    //           status: false,
-                    //           room_id: room._id,
-                    //           message: 'The room is existing!'
-                    //      });
-
-                    room.deleted_by_buyer = false;
-                    room.deleted_by_seller = false;
-                    room.save();
-                    resp.send({
-                         status: false,
-                         message: "Room exists and re-enable room for seller and buyer",
-                         room,
-                    });
+               }
+               else {
+                    if (roomRequest.creator === roomRequest.buyer && !room.deleted_by_buyer)
+                         resp.send({
+                              status: false,
+                              message: 'Room exsits!',
+                              room
+                         });
+                    else if (roomRequest.creator === roomRequest.seller && !room.deleted_by_seller)
+                         resp.send({
+                              status: false,
+                              message: 'Room exsits!',
+                              room
+                         });
+                    else {
+                         room.deleted_by_buyer = false;
+                         room.deleted_by_seller = false;
+                         room.save();
+                         resp.send({
+                              status: true,
+                              message: "Room exists and re-enable room for seller and buyer",
+                              room,
+                         });
+                    }
                }
           });
      }
