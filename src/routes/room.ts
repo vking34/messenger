@@ -84,8 +84,8 @@ router.post("/", async (req: Request, resp: Response) => {
           });
      else {
           roomRequest._id = roomRequest.buyer + "." + roomRequest.seller;
-          RoomModel.findById(roomRequest._id, async (_e, roomRecord: any) => {
-               if (!roomRecord) {
+          RoomModel.findById(roomRequest._id, async (_e, room: any) => {
+               if (!room) {
                     // need to check user_id in shop same to seller_id
                     let shopResponse = await axios.get(SHOP_SERVICE + roomRequest.shop_id);
                     roomRequest.shop = shopResponse.data;
@@ -97,9 +97,9 @@ router.post("/", async (req: Request, resp: Response) => {
 
                     RoomModel.create(roomRequest).catch((_e) => { });
                } else {
-                    // if (roomRecord['enable'] === false) {
-                    //      roomRecord['enable'] = true;
-                    //      roomRecord.save();
+                    // if (room['enable'] === false) {
+                    //      room['enable'] = true;
+                    //      room.save();
                     //      resp.send({
                     //           status: true,
                     //           message: 'Created room successfully!',
@@ -113,13 +113,13 @@ router.post("/", async (req: Request, resp: Response) => {
                     //           message: 'The room is existing!'
                     //      });
 
-                    roomRecord.deleted_by_buyer = false;
-                    roomRecord.deleted_by_seller = false;
-                    roomRecord.save();
+                    room.deleted_by_buyer = false;
+                    room.deleted_by_seller = false;
+                    room.save();
                     resp.send({
                          status: false,
-                         message: "Created room successfully!",
-                         room: roomRecord,
+                         message: "Room exists and re-enable room for seller and buyer",
+                         room,
                     });
                }
           });
