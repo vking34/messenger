@@ -82,47 +82,48 @@ router.post("/", async (req: Request, resp: Response) => {
                status: false,
                message: "Buyer is the same to seller",
           });
+     else {
+          roomRequest._id = roomRequest.buyer + "." + roomRequest.seller;
+          RoomModel.findById(roomRequest._id, async (_e, roomRecord: any) => {
+               if (!roomRecord) {
+                    // need to check user_id in shop same to seller_id
+                    let shopResponse = await axios.get(SHOP_SERVICE + roomRequest.shop_id);
+                    roomRequest.shop = shopResponse.data;
+                    resp.send({
+                         status: true,
+                         message: "Created room successfully!",
+                         room: roomRequest,
+                    });
 
-     roomRequest._id = roomRequest.buyer + "." + roomRequest.seller;
-     RoomModel.findById(roomRequest._id, async (_e, roomRecord: any) => {
-          if (!roomRecord) {
-               // need to check user_id in shop same to seller_id
-               let shopResponse = await axios.get(SHOP_SERVICE + roomRequest.shop_id);
-               roomRequest.shop = shopResponse.data;
-               resp.send({
-                    status: true,
-                    message: "Created room successfully!",
-                    room: roomRequest,
-               });
+                    RoomModel.create(roomRequest).catch((_e) => { });
+               } else {
+                    // if (roomRecord['enable'] === false) {
+                    //      roomRecord['enable'] = true;
+                    //      roomRecord.save();
+                    //      resp.send({
+                    //           status: true,
+                    //           message: 'Created room successfully!',
+                    //           room
+                    //      });
+                    // }
+                    // else
+                    //      resp.send({
+                    //           status: false,
+                    //           room_id: room._id,
+                    //           message: 'The room is existing!'
+                    //      });
 
-               RoomModel.create(roomRequest).catch((_e) => { });
-          } else {
-               // if (roomRecord['enable'] === false) {
-               //      roomRecord['enable'] = true;
-               //      roomRecord.save();
-               //      resp.send({
-               //           status: true,
-               //           message: 'Created room successfully!',
-               //           room
-               //      });
-               // }
-               // else
-               //      resp.send({
-               //           status: false,
-               //           room_id: room._id,
-               //           message: 'The room is existing!'
-               //      });
-
-               roomRecord.deleted_by_buyer = false;
-               roomRecord.deleted_by_seller = false;
-               roomRecord.save();
-               resp.send({
-                    status: true,
-                    message: "Created room successfully!",
-                    room: roomRecord,
-               });
-          }
-     });
+                    roomRecord.deleted_by_buyer = false;
+                    roomRecord.deleted_by_seller = false;
+                    roomRecord.save();
+                    resp.send({
+                         status: false,
+                         message: "Created room successfully!",
+                         room: roomRecord,
+                    });
+               }
+          });
+     }
 });
 
 // re-enable room
