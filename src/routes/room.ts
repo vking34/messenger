@@ -131,7 +131,7 @@ router.put('/:room_id/enable', (req: Request, resp: Response) => {
      const { role } = req.body;
 
      if (!role) {
-          resp.status(400).send({ MISSING_ROLE });
+          resp.status(400).send(MISSING_ROLE);
      }
      else {
           RoomModel.findById(room_id, (_e, room: any) => {
