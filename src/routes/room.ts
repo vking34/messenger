@@ -130,7 +130,7 @@ router.put('/:room_id/enable', (req: Request, resp: Response) => {
      const room_id: string = req.params.room_id;
      const { role } = req.body;
 
-     if (role) {
+     if (!role) {
           resp.status(400).send({ MISSING_ROLE });
      }
      else {
