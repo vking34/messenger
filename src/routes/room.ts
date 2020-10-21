@@ -6,7 +6,7 @@ import { UserRole } from "../constants/user";
 import axios from "axios";
 import { UserRequest } from "../interfaces/user";
 import emitUserStatusChangeEvent from "../sockets/userStatusChangeEvent";
-import { ROOM_NOT_FOUND } from '../constants/response';
+import { ROOM_NOT_FOUND, MISSING_ROLE } from '../constants/response';
 
 export const SHOP_SERVICE = process.env.SHOP_SERVICE + "/";
 const router: Router = express.Router();
@@ -130,24 +130,29 @@ router.put('/:room_id/enable', (req: Request, resp: Response) => {
      const room_id: string = req.params.room_id;
      const { role } = req.body;
 
-     RoomModel.findById(room_id, (_e, room: any) => {
-          if (!room) {
-               resp.status(400).send(ROOM_NOT_FOUND);
-          }
-          else {
-               if (role === UserRole.BUYER)
-                    room.deleted_by_buyer = false;
-               else
-                    room.deleted_by_seller = false;
+     if (role) {
+          resp.status(400).send({ MISSING_ROLE });
+     }
+     else {
+          RoomModel.findById(room_id, (_e, room: any) => {
+               if (!room) {
+                    resp.status(400).send(ROOM_NOT_FOUND);
+               }
+               else {
+                    if (role === UserRole.BUYER)
+                         room.deleted_by_buyer = false;
+                    else
+                         room.deleted_by_seller = false;
 
-               room.save();
-               resp.send({
-                    status: true,
-                    message: 'Enable room successfully!',
-                    room
-               });
-          }
-     });
+                    room.save();
+                    resp.send({
+                         status: true,
+                         message: 'Enable room successfully!',
+                         room
+                    });
+               }
+          });
+     }
 })
 
 // pin room
