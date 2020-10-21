@@ -280,11 +280,13 @@ router.delete("/:room_id", (req: Request, resp: Response) => {
                     room.deleted_by_buyer = true;
                     room.buyer_deleted_at = now;
                     room.buyer_last_message = undefined;
+                    room.pinned_by_buyer = undefined;
                     emitUserStatusChangeEvent(room.buyer, room.seller, UserRole.BUYER, room._id, false);
                } else {
                     room.deleted_by_seller = true;
                     room.seller_deleted_at = now;
                     room.seller_last_message = undefined;
+                    room.pinned_by_seller = undefined;
                     emitUserStatusChangeEvent(room.seller, room.buyer, UserRole.SELLER, room._id, false);
                }
 
