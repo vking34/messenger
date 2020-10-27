@@ -34,7 +34,7 @@ io.of(MESSENGER_NS).use((socket: Socket, next) => {
     // console.log('socket query: ', socket.handshake.query);
     let { token, user_id, user_role } = socket.handshake.query;
 
-    //TODO: check token
+    // ! TODO(vuong, khanh): check token
     if (token) {
         // mark user id and join the own room
         socket['user_id'] = user_id;

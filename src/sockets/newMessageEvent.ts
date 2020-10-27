@@ -31,15 +31,14 @@ export default (io: Server, socket: Socket) => {
                          }
                          else {
                               room.buyer_unseen_messages++;
-
                          }
                          if (!room?.deleted_by_buyer)
                               room.buyer_last_message = message;
                          if (!room?.deleted_by_seller)
                               room.seller_last_message = message;
-                         
+
                          room.save();
-                    })
+                    }).catch(_e => { });
                })
                .catch((_e) => { });
      });
