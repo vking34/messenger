@@ -324,7 +324,7 @@ router.post('/:room_id/block', async (req: Request, resp: Response) => {
                room.blocked_at = Date.now();
           }
           else {
-               delete room.blocked_at;
+               room.blocked_at = undefined;
           }
           room.save();
 
