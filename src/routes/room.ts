@@ -302,6 +302,50 @@ router.delete("/:room_id", (req: Request, resp: Response) => {
      });
 });
 
+// block user
+router.post('/:room_id/block', async (req: Request, resp: Response) => {
+     const room_id: string = req.params.room_id;
+     const { block, role } = req.body;
+
+     RoomModel.findById(room_id, (_e, room: any) => {
+          if (!room) {
+               resp.status(400).send(ROOM_NOT_FOUND);
+               return;
+          }
+
+          // if (block === 'undefined' || role === 'undefined') {
+          //      resp.status(400).send({
+          //           status: false,
+          //           message: 'Role/Block is missing!'
+          //      });
+          // }
+
+          if (block) {
+               let now = Date.now();
+               if (role === UserRole.BUYER) {
+                    room.blocked_by_buyer = now;
+               }
+               else if (role === UserRole.SELLER) {
+                    room.blocked_by_seller = now;
+               }
+          }
+          else {
+               if (role === UserRole.BUYER) {
+                    delete room.blocked_by_buyer;
+               }
+               else if (role === UserRole.SELLER) {
+                    delete room.blocked_by_seller;
+               }
+          }
+          room.save();
+
+          resp.send({
+               status: true,
+               room
+          })
+     })
+});
+
 // get room
 router.get("/:room_id", async (req: Request, resp: Response) => {
      const room_id = req.params.room_id;

@@ -45,7 +45,9 @@ const RoomSchema: Schema = new mongoose.Schema(
           deleted_by_seller: {
                type: Boolean,
                default: false
-          }
+          },
+          blocked_by_seller: Date,      // buyer is blocked by seller if this field exists 
+          blocked_by_buyer: Date        // seller is blocked by buyer if this field exists
      },
      {
           timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
