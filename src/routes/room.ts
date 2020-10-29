@@ -305,7 +305,7 @@ router.delete("/:room_id", (req: Request, resp: Response) => {
 // block user
 router.post('/:room_id/block', async (req: Request, resp: Response) => {
      const room_id: string = req.params.room_id;
-     const { block, role } = req.body;
+     const { block } = req.body;
 
      RoomModel.findById(room_id, (_e, room: any) => {
           if (!room) {
@@ -321,21 +321,10 @@ router.post('/:room_id/block', async (req: Request, resp: Response) => {
           // }
 
           if (block) {
-               let now = Date.now();
-               if (role === UserRole.BUYER) {
-                    room.blocked_by_buyer = now;
-               }
-               else if (role === UserRole.SELLER) {
-                    room.blocked_by_seller = now;
-               }
+               room.blocked_at = Date.now();
           }
           else {
-               if (role === UserRole.BUYER) {
-                    delete room.blocked_by_buyer;
-               }
-               else if (role === UserRole.SELLER) {
-                    delete room.blocked_by_seller;
-               }
+               delete room.blocked_at;
           }
           room.save();
 
