@@ -2,6 +2,7 @@ import { server } from '../app';
 import { Server, Socket } from 'socket.io';
 import redisAdapter from 'socket.io-redis';
 export const MESSENGER_NS = process.env.MESSENGER_NAMESPACE;
+export const AUCTION_RESULT_NS = process.env.AUCTION_RESULT_NAMESPACE;
 
 import scanActiveUsers from './scanActiveUsers';
 
@@ -76,6 +77,11 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
 
     // scan active users
     scanActiveUsers(io, socket);
+});
+
+io.of(AUCTION_RESULT_NS).on('connection', (socket: Socket) => {
+    console.log(socket);
+    console.log('connected!');
 });
 
 export default io;
