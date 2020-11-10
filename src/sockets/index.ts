@@ -30,7 +30,8 @@ const socketOptions = {
 const io: Server = require('socket.io')(server, socketOptions);
 io.adapter(redisAdapter(process.env.REDIS_ADDRESS));
 
-// socket middlewares
+// 1. Messenger Namespace
+// 1.1. Middlewares
 io.of(MESSENGER_NS).use((socket: Socket, next) => {
     // console.log('socket query: ', socket.handshake.query);
     let { token, user_id, user_role } = socket.handshake.query;
@@ -51,7 +52,7 @@ io.of(MESSENGER_NS).use((socket: Socket, next) => {
     }
 });
 
-// socket events
+// 1.2. Events
 io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
 
     // event: 'create_room' - create room
@@ -79,9 +80,32 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
     scanActiveUsers(io, socket);
 });
 
-io.of(AUCTION_RESULT_NS).on('connection', (socket: Socket) => {
-    console.log(socket);
-    console.log('connected!');
+
+// 2. Auction Namespace
+// 2.1. Middlewares
+io.of(AUCTION_RESULT_NS).use((socket: Socket, next) => {
+    let { token, auction_id } = socket.handshake.query;
+
+    // ! TODO(vuong, khanh): check token
+    if (token && auction_id) {
+        socket.join(auction_id);
+
+        return next();
+    }
+    else {
+        return next(new Error('Unauthorization or Missing auction id'));
+    }
 });
+
+// 2.2. Events
+io.of(AUCTION_RESULT_NS).on('connection', (_socket: Socket) => {
+    console.log('auction connected!');
+
+    // io.of(AUCTION_RESULT_NS).in('3753').emit('new_auction_result', {
+    //     auction_id: 3234,
+    //     current_price: 34000
+    // });
+});
+
 
 export default io;
