@@ -85,7 +85,6 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
 // 2.1. Middlewares
 io.of(AUCTION_RESULT_NS).use((socket: Socket, next) => {
     let { token, auction_id } = socket.handshake.query;
-    console.log('socket to', auction_id);
 
     // ! TODO(vuong, khanh): check token
     if (token && auction_id) {

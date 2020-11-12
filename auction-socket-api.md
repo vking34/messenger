@@ -20,16 +20,19 @@ let auctionSocket = io(AUCTION_RESULT_NS, {
 
 - ```new_auction_result```:
      - server:
-          - ```id```: long. 0 if no one wins.
+          - ```id```: long. Auction ID
           - ```type```: string
-          - ```phaseId```: [null, long]
+          - ```phaseId```: long
           - ```state```: string
           - ```bidsCount```: int
           - ```biddersCount```: int
-          - ```winnerId```: [null , long]
+          - ```winnerId```: long. 0 if no one wins.
           - ```currentPrice```: long
           - ```priceBidAutoHighest```: long
           - ```timeStart```: long. The starting time of the next phase = the ending time of the current phase + 3s
           - ```timeEnd```: long.
 
-
+## Get name of winner
+- API: {account_service}/v1/users/\<user-id>
+- Response:
+    - ```name```

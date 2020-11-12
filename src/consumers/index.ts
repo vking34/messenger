@@ -1,5 +1,5 @@
 import KafkaAvro from 'kafka-node-avro';
-// import sendAuctionResult from '../sockets/newAuctionResultEvent';
+import sendAuctionResult from '../sockets/newAuctionResultEvent';
 
 const settings = {
     kafka: {
@@ -13,23 +13,13 @@ const settings = {
 
 KafkaAvro.init(settings)
     .then((kafka) => {
-
-
-        // const consumerOptions = {
-        //     groupId: 'auction-event-consumer-node',
-        //     // fromOffset: 'latest',
-        //     // commitOffsetsOnFirstJoin: true,
-        //     autoCommit: false,
-        //     // protocol: ['roundrobin']
-        // }
-
         const consumerOptions = {
             groupId: 'auction-event-consumer',
             fromOffset: 'latest',
             // commitOffsetsOnFirstJoin: true,
-            autoCommit: false,
+            autoCommit: true,
             // protocol: ['roundrobin']
-            outOfRangeOffset: 'latest'
+            // outOfRangeOffset: 'latest'
         }
 
         let biddingConsumer = kafka.addConsumer(
@@ -38,9 +28,9 @@ KafkaAvro.init(settings)
         );
 
         biddingConsumer.on('message', auctionResultMessage => {
-            console.log('auction id:', auctionResultMessage.value.id);
+            // console.log('auction id:', auctionResultMessage.value.id);
 
-            // sendAuctionResult(auctionResultMessage.value);
+            sendAuctionResult(auctionResultMessage.value);
         })
     }).catch((_e) => {
         console.log(_e);
