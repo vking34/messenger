@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Socket.IO Chat Example</title>
+    <link rel="stylesheet" href="/v1/conversations/test/style.css">
+</head>
+
+<body>
+    <ul class="pages">
+        <li class="chat page">
+            <div class="chatArea">
+                <ul class="messages"></ul>
+            </div>
+            <input class="inputMessage" placeholder="Type here..." />
+            <button id="sendMsgBtn" class="sendMsgBtn">Send</button>
+        </li>
+        <li class="login page">
+            <div class="form">
+                <h3 class="title">Auction ID?</h3>
+                <input id="auctionId" class="usernameInput" placeholder="Auction ID" type="text" maxlength="14" />
+
+            </div>
+        </li>
+    </ul>
+
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="/v1/conversations/sockets/socket.io.js"></script>
+    <script src="/v1/conversations/test/auction/main.js"></script>
+</body>
+
+</html>

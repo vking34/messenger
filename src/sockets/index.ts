@@ -6,15 +6,6 @@ export const AUCTION_RESULT_NS = process.env.AUCTION_RESULT_NAMESPACE;
 
 import scanActiveUsers from './scanActiveUsers';
 
-// events
-import disconnectEvent from './disconnectEvent';
-import handleNewMessageEvent from './newMessageEvent';
-import handleNewRoomEvent from './newRoomEvent';
-import handleTypingEvent from './typingEvent';
-import handleStopTypingEvent from './stopTypingEvent';
-import handleSeenMessageEvent from './seenMessageEvent';
-import handleVerifyUser from './verifyUserEvent';
-
 // init socket server
 const socketOptions = {
     // server
@@ -53,6 +44,15 @@ io.of(MESSENGER_NS).use((socket: Socket, next) => {
 });
 
 // 1.2. Events
+import disconnectEvent from './disconnectEvent';
+import handleNewMessageEvent from './newMessageEvent';
+import handleNewRoomEvent from './newRoomEvent';
+import handleTypingEvent from './typingEvent';
+import handleStopTypingEvent from './stopTypingEvent';
+import handleSeenMessageEvent from './seenMessageEvent';
+import handleVerifyUser from './verifyUserEvent';
+
+
 io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
 
     // event: 'create_room' - create room
@@ -85,10 +85,12 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
 // 2.1. Middlewares
 io.of(AUCTION_RESULT_NS).use((socket: Socket, next) => {
     let { token, auction_id } = socket.handshake.query;
+    console.log('socket to', auction_id);
 
     // ! TODO(vuong, khanh): check token
     if (token && auction_id) {
         socket.join(auction_id);
+        socket['auctionId'] = auction_id;
 
         return next();
     }
@@ -98,9 +100,13 @@ io.of(AUCTION_RESULT_NS).use((socket: Socket, next) => {
 });
 
 // 2.2. Events
-io.of(AUCTION_RESULT_NS).on('connection', (_socket: Socket) => {
-    console.log('auction connected!');
+import handleAuctionUserDisconnectEvent from './auctionUserDisconnectEvent';
 
+
+io.of(AUCTION_RESULT_NS).on('connection', (socket: Socket) => {
+    console.log('new socket connected to auction id:', socket['auctionId']);
+
+    handleAuctionUserDisconnectEvent(io, socket);
     // io.of(AUCTION_RESULT_NS).in('3753').emit('new_auction_result', {
     //     auction_id: 3234,
     //     current_price: 34000

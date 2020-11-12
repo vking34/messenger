@@ -9,7 +9,7 @@ $(function() {
 
     // Initialize variables
     var $window = $(window);
-    var $fromId = $('#senderId'); // Input for from ID
+    var $auctionId = $('#auctionId'); // Input for from ID
     var $receiverId = $('#receiverId');
     var $userRole = $('#userRole');
     var $messages = $('.messages'); // Messages area
@@ -34,38 +34,8 @@ $(function() {
 
     // const API_URL = 'https://api.chozoi.com';
     // const API_URL = 'https://api.chozoi.vn';
-    // const API_URL = 'http://localhost:3002';
-    const MESSENGER_NS = API_URL + '/v1/conversations/events';
+    const API_URL = 'http://localhost:3002';
     const AUCTION_RESULT_NS = API_URL + '/v1/conversations/auction-result-events';
-    var socket;
-
-    let auctionSocket = io(AUCTION_RESULT_NS, {
-        path: '/v1/conversations/sockets',
-        transports: ['websocket'],
-        query: {
-            token: 'access_token',
-            auction_id: '3817'
-        }
-    });
-
-    auctionSocket.on('connect', () => {
-        console.log('auction socket is connected!');
-    })
-
-    auctionSocket.on('new_auction_result', auctionResult => {
-        console.log(auctionResult);
-    })
-
-    const addParticipantsMessage = (data) => {
-
-        var message = '';
-        if (data.numUsers === 1) {
-            message += "there's 1 participant";
-        } else {
-            message += "there are " + data.numUsers + " participants";
-        }
-        log(message);
-    }
 
     $sendBtn.click(() => {
         console.log("sending...");
@@ -79,131 +49,24 @@ $(function() {
 
     // Sets the client's username
     const createRoom = () => {
-        username = cleanInput($fromId.val().trim());
-        receiver = cleanInput($receiverId.val().trim());
-        userRole = cleanInput($userRole.val().trim());
+        const auctionId = cleanInput($auctionId.val().trim());
 
-        if (userRole === 'b') {
-            var buyer = username;
-            var seller = receiver;
-            var role = 'BUYER';
-        } else {
-            var buyer = receiver;
-            var seller = username;
-            var role = 'SELLER';
-        }
-        const data = {
-            type: 'BS',
-            creator: username,
-            buyer,
-            seller,
-            buyer_info: {
-                name: 'Le Vuong'
-            }
-        };
-
-        socket = io(MESSENGER_NS, {
+        let auctionSocket = io(AUCTION_RESULT_NS, {
             path: '/v1/conversations/sockets',
             transports: ['websocket'],
             query: {
                 token: 'access_token',
-                user_id: username,
-                user_role: role
+                auction_id: auctionId
             }
         });
 
-        roomId = buyer + '.' + seller;
-        console.log(data);
-
-        // Socket events
-
-        socket.on('connect', () => {
-            console.log(socket);
-        });
-
-        // get list of active users
-        socket.on('active_user_list', (data) => {
-            console.log('active_user_list:', data);
+        auctionSocket.on('connect', () => {
+            console.log('auction socket is connected!');
         })
 
-        // on user status change
-        socket.on('user_status_change', (data) => {
-            console.log('user_status_change:', data);
+        auctionSocket.on('new_auction_result', auctionResult => {
+            console.log(auctionResult);
         })
-
-        // on create room
-        socket.on('create_room', room => {
-            console.log('created room: ', room);
-            connected = true;
-
-            // Display the welcome message
-            const { buyer, seller } = room;
-            var message = "buyer: " + buyer + ", seller: " + seller;
-            log(message, {
-                prepend: true
-            });
-            addParticipantsMessage({ numUsers: 1 });
-        });
-
-        // Whenever the server emits 'new_message', update the chat body
-        socket.on('new_message', (data) => {
-            console.log("receiving: ", data);
-            addChatMessage(data);
-        });
-
-        // On the other client have seen messages
-        socket.on('seen_messages', (data) => {
-            console.log('on seen_messages', data);
-        })
-
-        // Whenever the server emits 'user joined', log it in the chat body
-        socket.on('user joined', (data) => {
-            log(data.username + ' joined');
-            addParticipantsMessage(data);
-        });
-
-        // Whenever the server emits 'user left', log it in the chat body
-        socket.on('user left', (data) => {
-            log(data.username + ' left');
-            addParticipantsMessage(data);
-            removeChatTyping(data);
-        });
-
-        // Whenever the server emits 'typing', show the typing message
-        socket.on('typing', (data) => {
-            addChatTyping(data);
-        });
-
-        // Whenever the server emits 'stop_typing', kill the typing message
-        socket.on('stop_typing', (data) => {
-            removeChatTyping(data);
-        });
-
-        socket.on('disconnect', () => {
-            console.log('disconnected!');
-            log('you have been disconnected');
-        });
-
-        socket.on('reconnect', () => {
-            log('you have been reconnected');
-            if (username) {
-                socket.emit('set usernames', { from: username, to: receiver });
-            }
-        });
-
-        socket.on('reconnect_error', () => {
-            log('attempt to reconnect has failed');
-        });
-
-        // If the username is valid
-        if (username) {
-            $loginPage.fadeOut();
-            $chatPage.show();
-            $loginPage.off('click');
-
-            // Tell the server your username
-            socket.emit('create_room', data);
-        }
     }
 
     // Sends a chat message

@@ -20,7 +20,7 @@ let auctionSocket = io(AUCTION_RESULT_NS, {
 
 - ```new_auction_result```:
      - server:
-          - ```id```: long
+          - ```id```: long. 0 if no one wins.
           - ```type```: string
           - ```phaseId```: [null, long]
           - ```state```: string
@@ -28,9 +28,8 @@ let auctionSocket = io(AUCTION_RESULT_NS, {
           - ```biddersCount```: int
           - ```winnerId```: [null , long]
           - ```currentPrice```: long
-          - ```ceilingPrice```: long
           - ```priceBidAutoHighest```: long
-          - ```timeStart```: long. the starting time of the next phase = the ending time of the current phase + 3s
+          - ```timeStart```: long. The starting time of the next phase = the ending time of the current phase + 3s
           - ```timeEnd```: long.
 
 
