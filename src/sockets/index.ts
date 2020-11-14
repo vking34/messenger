@@ -83,7 +83,9 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
 
 // 2. Auction Namespace
 // 2.1. Middlewares
-io.of(AUCTION_RESULT_NS).use((socket: Socket, next) => {
+export const auctionNamespace = io.of(AUCTION_RESULT_NS);
+
+auctionNamespace.use((socket: Socket, next) => {
     let { token, auction_id } = socket.handshake.query;
 
     // ! TODO(vuong, khanh): check token
@@ -101,15 +103,10 @@ io.of(AUCTION_RESULT_NS).use((socket: Socket, next) => {
 // 2.2. Events
 import handleAuctionUserDisconnectEvent from './auctionUserDisconnectEvent';
 
+auctionNamespace.on('connection', (socket: Socket) => {
+    // console.log('new socket connected to auction id:', socket['auctionId']);
 
-io.of(AUCTION_RESULT_NS).on('connection', (socket: Socket) => {
-    console.log('new socket connected to auction id:', socket['auctionId']);
-
-    handleAuctionUserDisconnectEvent(io, socket);
-    // io.of(AUCTION_RESULT_NS).in('3753').emit('new_auction_result', {
-    //     auction_id: 3234,
-    //     current_price: 34000
-    // });
+    handleAuctionUserDisconnectEvent(socket);
 });
 
 

@@ -1,11 +1,9 @@
-
-import { AUCTION_RESULT_NS } from '.';
-import io from './index';
+import { auctionNamespace } from './index';
+import { AuctionResult } from '../interfaces/auctionResult';
 
 const NEW_AUCTION_RESULT = 'new_auction_result';
-export default (auctionResult) => {
-    console.log("auction result ", auctionResult.id);
-
-    io.of(AUCTION_RESULT_NS).in(String(auctionResult.id)).emit(NEW_AUCTION_RESULT, auctionResult);
-    return 1;
+export default (auctionResut: AuctionResult) => {
+    auctionNamespace
+        .in(auctionResut.id.toString())
+        .emit(NEW_AUCTION_RESULT, auctionResut);
 }
