@@ -27,6 +27,10 @@ app.use(cors());
 // sockets
 require('./sockets/index');
 
+// kafka consumers
+import startAuctionResultConsumer from './consumers/index';
+startAuctionResultConsumer();
+
 // routes
 import messageRoute from './routes/message';
 import roomRoute from './routes/room';

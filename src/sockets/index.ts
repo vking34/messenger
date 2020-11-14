@@ -2,17 +2,9 @@ import { server } from '../app';
 import { Server, Socket } from 'socket.io';
 import redisAdapter from 'socket.io-redis';
 export const MESSENGER_NS = process.env.MESSENGER_NAMESPACE;
+export const AUCTION_RESULT_NS = process.env.AUCTION_RESULT_NAMESPACE;
 
 import scanActiveUsers from './scanActiveUsers';
-
-// events
-import disconnectEvent from './disconnectEvent';
-import handleNewMessageEvent from './newMessageEvent';
-import handleNewRoomEvent from './newRoomEvent';
-import handleTypingEvent from './typingEvent';
-import handleStopTypingEvent from './stopTypingEvent';
-import handleSeenMessageEvent from './seenMessageEvent';
-import handleVerifyUser from './verifyUserEvent';
 
 // init socket server
 const socketOptions = {
@@ -29,7 +21,8 @@ const socketOptions = {
 const io: Server = require('socket.io')(server, socketOptions);
 io.adapter(redisAdapter(process.env.REDIS_ADDRESS));
 
-// socket middlewares
+// 1. Messenger Namespace
+// 1.1. Middlewares
 io.of(MESSENGER_NS).use((socket: Socket, next) => {
     // console.log('socket query: ', socket.handshake.query);
     let { token, user_id, user_role } = socket.handshake.query;
@@ -50,7 +43,16 @@ io.of(MESSENGER_NS).use((socket: Socket, next) => {
     }
 });
 
-// socket events
+// 1.2. Events
+import disconnectEvent from './disconnectEvent';
+import handleNewMessageEvent from './newMessageEvent';
+import handleNewRoomEvent from './newRoomEvent';
+import handleTypingEvent from './typingEvent';
+import handleStopTypingEvent from './stopTypingEvent';
+import handleSeenMessageEvent from './seenMessageEvent';
+import handleVerifyUser from './verifyUserEvent';
+
+
 io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
 
     // event: 'create_room' - create room
@@ -77,5 +79,35 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
     // scan active users
     scanActiveUsers(io, socket);
 });
+
+
+// 2. Auction Namespace
+// 2.1. Middlewares
+export const auctionNamespace = io.of(AUCTION_RESULT_NS);
+
+auctionNamespace.use((socket: Socket, next) => {
+    let { token, auction_id } = socket.handshake.query;
+
+    // ! TODO(vuong, khanh): check token
+    if (token && auction_id) {
+        socket.join(auction_id);
+        socket['auctionId'] = auction_id;
+
+        return next();
+    }
+    else {
+        return next(new Error('Unauthorization or Missing auction id'));
+    }
+});
+
+// 2.2. Events
+import handleAuctionUserDisconnectEvent from './auctionUserDisconnectEvent';
+
+auctionNamespace.on('connection', (socket: Socket) => {
+    // console.log('new socket connected to auction id:', socket['auctionId']);
+
+    handleAuctionUserDisconnectEvent(socket);
+});
+
 
 export default io;

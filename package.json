@@ -10,14 +10,17 @@
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": [],
-    "author": "",
+    "author": "vking34",
     "license": "ISC",
     "dependencies": {
+        "@ovotech/avro-kafkajs": "^0.6.0",
+        "avsc": "^5.4.22",
         "axios": "^0.20.0",
         "body-parser": "^1.19.0",
         "cuid": "^2.1.8",
         "express": "^4.17.1",
         "http": "0.0.1-security",
+        "kafkajs": "^1.14.0",
         "mongoose": "^5.10.7",
         "path": "^0.12.7",
         "redis": "^3.0.2",
