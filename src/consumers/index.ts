@@ -3,22 +3,38 @@ import { SchemaRegistry, AvroKafka } from '@ovotech/avro-kafkajs';
 import { AuctionResult } from '../interfaces/auctionResult';
 import boardcastAuctionResult from '../sockets/newAuctionResultEvent';
 
+const {
+    SCHEMA_REGISTRY_URL,
+    KAFKA_BOOTSTRAP_SERVERS,
+    KAFKA_APP_ID,
+    CONSUMER_GROUP_ID,
+} = process.env;
+
 export default async () => {
-    const schemaRegistry = new SchemaRegistry({ uri: process.env.SCHEMA_REGISTRY_URL });
+    const schemaRegistry = new SchemaRegistry({ uri: SCHEMA_REGISTRY_URL });
     const kafka = new Kafka({
-        clientId: 'auction-consumer-node',
-        brokers: [process.env.KAFKA_BOOTSTRAP_SERVERS]
+        clientId: KAFKA_APP_ID,
+        brokers: [KAFKA_BOOTSTRAP_SERVERS]
     });
     const avroKafka = new AvroKafka(schemaRegistry, kafka);
+    const consumer = avroKafka.consumer({ groupId: CONSUMER_GROUP_ID })
+    let connected = false;
 
-    const consumer = avroKafka.consumer({ groupId: 'auction-event-consumer-node' })
-    await consumer.connect();
-    await consumer.subscribe({
-        topic: 'chozoi.socket.auction.result'
-    });
-    await consumer.run<AuctionResult>({
-        eachMessage: async ({ message }) => {
-            boardcastAuctionResult(message.value);
+    while (!connected) {
+        try {
+            await consumer.connect();
+            await consumer.subscribe({
+                topic: 'chozoi.socket.auction.result'
+            });
+            await consumer.run<AuctionResult>({
+                eachMessage: async ({ message }) => {
+                    boardcastAuctionResult(message.value);
+                }
+            });
+            connected = true;
         }
-    });
+        catch (e) {
+            console.log(e);
+        }
+    }
 };

@@ -42,3 +42,7 @@ app.use('/v1/conversations/messages', messageRoute);
 server.listen(port, () => {
     console.log('Server listening at port %d', port);
 });
+
+process.on('unhandledRejection', (reason, _promise) => {
+    console.log('Unhandled Rejection at:', reason);
+});

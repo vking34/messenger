@@ -6,7 +6,7 @@ import { UserRole } from "../constants/user";
 import axios from "axios";
 import { UserRequest } from "../interfaces/user";
 import emitUserStatusChangeEvent from "../sockets/userStatusChangeEvent";
-import { ROOM_NOT_FOUND, MISSING_ROLE, FORBIDDEN_RESPONSE } from '../constants/response';
+import { ROOM_NOT_FOUND, MISSING_ROLE, FORBIDDEN_RESPONSE, ROOM_NOT_UPDATE, ROOM_NOT_CREATED } from '../constants/response';
 import { BlockRequest } from '../interfaces/request';
 
 export const SHOP_SERVICE = process.env.SHOP_SERVICE + "/";
@@ -66,12 +66,20 @@ router.get("", async (req: Request, resp: Response) => {
         }
     }
 
-    rooms = await RoomModel.find(condition, projection).sort(sortOptions);
-    resp.send({
-        user_id,
-        role,
-        rooms,
-    });
+    try {
+        rooms = await RoomModel.find(condition, projection).sort(sortOptions);
+        resp.send({
+            user_id,
+            role,
+            rooms,
+        });
+    } catch (_e) {
+        resp.send({
+            user_id,
+            role,
+            rooms: [],
+        });
+    }
 });
 
 // create room
@@ -88,15 +96,19 @@ router.post("/", async (req: Request, resp: Response) => {
         RoomModel.findById(roomRequest._id, async (_e, room: any) => {
             if (!room) {
                 // need to check user_id in shop same to seller_id
-                let shopResponse = await axios.get(SHOP_SERVICE + roomRequest.shop_id);
-                roomRequest.shop = shopResponse.data;
-                resp.send({
-                    status: true,
-                    message: "Created room successfully!",
-                    room: roomRequest,
-                });
+                try {
+                    let shopResponse = await axios.get(SHOP_SERVICE + roomRequest.shop_id);
+                    roomRequest.shop = shopResponse.data;
+                    resp.send({
+                        status: true,
+                        message: "Created room successfully!",
+                        room: roomRequest,
+                    });
 
-                RoomModel.create(roomRequest).catch((_e) => { });
+                    RoomModel.create(roomRequest).catch((_e) => { });
+                } catch (_e) {
+                    resp.send(ROOM_NOT_CREATED);
+                }
             }
             else {
                 if (roomRequest.creator === roomRequest.buyer && !room.deleted_by_buyer)
@@ -160,29 +172,36 @@ router.put('/:room_id/enable', (req: Request, resp: Response) => {
 router.post("/:room_id/pin", async (req: Request, resp: Response) => {
     const room_id = req.params.room_id;
 
-    let room = await RoomModel.findById(room_id, (_e) => { });
-    if (!room) {
-        resp.status(400).send(ROOM_NOT_FOUND);
-    }
-    else {
-        const user: UserRequest = req.body;
-        let pin;
-        let now = Date.now();
-        if (user.role === UserRole.BUYER) pin = { pinned_by_buyer: now };
-        else pin = { pinned_by_seller: now };
+    try {
+        let room = await RoomModel.findById(room_id, (_e) => { });
+        if (!room) {
+            resp.status(400).send(ROOM_NOT_FOUND);
+            return;
+        }
+        else {
+            const user: UserRequest = req.body;
+            let pin;
+            let now = Date.now();
+            if (user.role === UserRole.BUYER) pin = { pinned_by_buyer: now };
+            else pin = { pinned_by_seller: now };
 
-        RoomModel.updateOne({ _id: room_id }, pin)
-            .then((_data) =>
-                resp.send({
-                    status: true,
-                })
-            )
-            .catch((e) =>
-                resp.status(400).send({
-                    status: false,
-                    message: e,
-                })
-            );
+            RoomModel.updateOne({ _id: room_id }, pin)
+                .then((_data) =>
+                    resp.send({
+                        status: true,
+                    })
+
+                )
+                .catch((e) =>
+                    resp.status(400).send({
+                        status: false,
+                        message: e,
+                    })
+                );
+        }
+    }
+    catch (e) {
+        resp.send(ROOM_NOT_UPDATE);
     }
 });
 
@@ -357,12 +376,16 @@ router.post('/:room_id/block', async (req: Request, resp: Response) => {
 router.get("/:room_id", async (req: Request, resp: Response) => {
     const room_id = req.params.room_id;
 
-    let result = await RoomModel.find({ _id: room_id });
-    let room = result ? result[0] : {};
+    try {
+        let result = await RoomModel.find({ _id: room_id });
+        let room = result ? result[0] : {};
 
-    resp.send({
-        room,
-    });
+        resp.send({
+            room,
+        });
+    } catch (_e) {
+        resp.status(400).send(ROOM_NOT_FOUND);
+    }
 });
 
 export default router;

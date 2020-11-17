@@ -9,5 +9,7 @@ export SOCKET_PATH=/v1/conversations/sockets
 export SHOP_SERVICE=http://api.chozoi.com/v1/shops
 export KAFKA_BOOTSTRAP_SERVERS=172.26.12.211:9092
 export SCHEMA_REGISTRY_URL=http://172.26.12.211:8081
+export KAFKA_APP_ID=auction-consumer-node-local
+export CONSUMER_GROUP_ID=auction-event-consumer-node-local
 npm run dev
 # npm run start

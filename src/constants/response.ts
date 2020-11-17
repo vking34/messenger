@@ -12,3 +12,13 @@ export const FORBIDDEN_RESPONSE = {
     status: false,
     message: 'You do not have the authorization'
 }
+
+export const ROOM_NOT_UPDATE = {
+    status: false,
+    message: 'Room can not updated!'
+}
+
+export const ROOM_NOT_CREATED = {
+    status: false,
+    message: 'Room can not created!'
+}
