@@ -8,6 +8,14 @@ const router: Router = express.Router();
 router.get('/', async (req: Request, resp: Response) => {
     const params = req.query;
     let { room_id, created_at, limit, from, to } = params;
+    if (room_id === 'undefined') {
+        resp.send({
+            room_id: 0,
+            filters: {},
+            data: []
+        })
+    }
+
     let recordLimit = limit ? Number(limit) : 15;
     let sortOpt = { created_at: created_at === '1' ? 1 : -1 };
     let condition: any = { room_id };

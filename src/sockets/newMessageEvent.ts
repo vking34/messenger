@@ -26,18 +26,20 @@ export default (io: Server, socket: Socket) => {
             })
             .then(message => {
                 RoomModel.findById(msg.room_id, (_e, room: any) => {
-                    if (to === room.seller) {
-                        room.seller_unseen_messages++;
-                    }
-                    else {
-                        room.buyer_unseen_messages++;
-                    }
-                    if (!room?.deleted_by_buyer)
-                        room.buyer_last_message = message;
-                    if (!room?.deleted_by_seller)
-                        room.seller_last_message = message;
+                    if (room) {
+                        if (to === room.seller) {
+                            room.seller_unseen_messages++;
+                        }
+                        else {
+                            room.buyer_unseen_messages++;
+                        }
+                        if (!room?.deleted_by_buyer)
+                            room.buyer_last_message = message;
+                        if (!room?.deleted_by_seller)
+                            room.seller_last_message = message;
 
-                    room.save();
+                        room.save();
+                    }
                 }).catch(_e => { console.log(_e); });
             })
             .catch((_e) => { console.log(_e) });
