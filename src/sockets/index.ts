@@ -83,31 +83,31 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
 
 // 2. Auction Namespace
 // 2.1. Middlewares
-// export const auctionNamespace = io.of(AUCTION_RESULT_NS);
+export const auctionNamespace = io.of(AUCTION_RESULT_NS);
 
-// auctionNamespace.use((socket: Socket, next) => {
-//     let { token, auction_id } = socket.handshake.query;
+auctionNamespace.use((socket: Socket, next) => {
+    let { token, auction_id } = socket.handshake.query;
 
-//     // ! TODO(vuong, khanh): check token
-//     if (token && auction_id) {
-//         socket.join(auction_id);
-//         socket['auctionId'] = auction_id;
+    // ! TODO(vuong, khanh): check token
+    if (token && auction_id) {
+        socket.join(auction_id);
+        socket['auctionId'] = auction_id;
 
-//         return next();
-//     }
-//     else {
-//         return next(new Error('Unauthorization or Missing auction id'));
-//     }
-// });
+        return next();
+    }
+    else {
+        return next(new Error('Unauthorization or Missing auction id'));
+    }
+});
 
-// // 2.2. Events
-// import handleAuctionUserDisconnectEvent from './auctionUserDisconnectEvent';
+// 2.2. Events
+import handleAuctionUserDisconnectEvent from './auctionUserDisconnectEvent';
 
-// auctionNamespace.on('connection', (socket: Socket) => {
-//     // console.log('new socket connected to auction id:', socket['auctionId']);
+auctionNamespace.on('connection', (socket: Socket) => {
+    // console.log('new socket connected to auction id:', socket['auctionId']);
 
-//     handleAuctionUserDisconnectEvent(socket);
-// });
+    handleAuctionUserDisconnectEvent(socket);
+});
 
 
 export default io;
