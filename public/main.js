@@ -32,29 +32,11 @@ $(function() {
     var $receiver = $('.receiverId');
     var $sendBtn = $('#sendMsgBtn');
 
-    const API_URL = 'https://api.chozoi.com';
+    // const API_URL = 'https://api.chozoi.com';
     // const API_URL = 'https://api.chozoi.vn';
-    // const API_URL = 'http://localhost:3002';
+    const API_URL = 'http://localhost:3002';
     const MESSENGER_NS = API_URL + '/v1/conversations/events';
-    const AUCTION_RESULT_NS = API_URL + '/v1/conversations/auction-result-events';
     var socket;
-
-    let auctionSocket = io(AUCTION_RESULT_NS, {
-        path: '/v1/conversations/sockets',
-        transports: ['websocket'],
-        query: {
-            token: 'access_token',
-            auction_id: '3817'
-        }
-    });
-
-    auctionSocket.on('connect', () => {
-        console.log('auction socket is connected!');
-    })
-
-    auctionSocket.on('new_auction_result', auctionResult => {
-        console.log(auctionResult);
-    })
 
     const addParticipantsMessage = (data) => {
 

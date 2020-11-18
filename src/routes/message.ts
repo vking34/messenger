@@ -14,6 +14,7 @@ router.get('/', async (req: Request, resp: Response) => {
             filters: {},
             data: []
         })
+        return;
     }
 
     let recordLimit = limit ? Number(limit) : 15;
