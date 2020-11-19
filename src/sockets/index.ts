@@ -1,10 +1,7 @@
 import { server } from '../app';
 import { Server, Socket } from 'socket.io';
 import redisAdapter from 'socket.io-redis';
-export const MESSENGER_NS = process.env.MESSENGER_NAMESPACE;
-export const AUCTION_RESULT_NS = process.env.AUCTION_RESULT_NAMESPACE;
 
-import scanActiveUsers from './scanActiveUsers';
 
 // init socket server
 const socketOptions = {
@@ -22,8 +19,11 @@ const io: Server = require('socket.io')(server, socketOptions);
 io.adapter(redisAdapter(process.env.REDIS_ADDRESS));
 
 // 1. Messenger Namespace
+export const MESSENGER_NS = process.env.MESSENGER_NAMESPACE;
+export const messengerNamespace = io.of(MESSENGER_NS);
+
 // 1.1. Middlewares
-io.of(MESSENGER_NS).use((socket: Socket, next) => {
+messengerNamespace.use((socket: Socket, next) => {
     // console.log('socket query: ', socket.handshake.query);
     let { token, user_id, user_role } = socket.handshake.query;
 
@@ -51,9 +51,10 @@ import handleTypingEvent from './typingEvent';
 import handleStopTypingEvent from './stopTypingEvent';
 import handleSeenMessageEvent from './seenMessageEvent';
 import handleVerifyUser from './verifyUserEvent';
+import scanActiveUsers from './scanActiveUsers';
 
 
-io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
+messengerNamespace.on('connection', (socket: Socket) => {
 
     // event: 'create_room' - create room
     handleNewRoomEvent(io, socket);
@@ -82,9 +83,10 @@ io.of(MESSENGER_NS).on('connection', (socket: Socket) => {
 
 
 // 2. Auction Namespace
-// 2.1. Middlewares
+export const AUCTION_RESULT_NS = process.env.AUCTION_RESULT_NAMESPACE;
 export const auctionNamespace = io.of(AUCTION_RESULT_NS);
 
+// 2.1. Middlewares
 auctionNamespace.use((socket: Socket, next) => {
     let { token, auction_id } = socket.handshake.query;
 
@@ -109,5 +111,10 @@ auctionNamespace.on('connection', (socket: Socket) => {
     handleAuctionUserDisconnectEvent(socket);
 });
 
+
+// error
+io.on('error', reason => {
+    console.log(reason);
+});
 
 export default io;
