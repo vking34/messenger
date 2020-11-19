@@ -69,6 +69,13 @@
                -  ```content```: Message content
                -  ```client_message_id```: (optional) Client generator unique id for server to comfirm
                - ```created_at```: Created time
+    
+    - ```room_deletion```:
+        - server: 
+            - ```room_id```
+            - ```seller```
+            - ```buyer```
+            - ```deletion_role```: SELLER | BUYER. Who deleted room.
 
      - ```typing```:
           - client:
