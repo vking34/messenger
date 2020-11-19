@@ -8,6 +8,9 @@ import { UserRequest } from "../interfaces/user";
 import emitUserStatusChangeEvent from "../sockets/userStatusChangeEvent";
 import { ROOM_NOT_FOUND, MISSING_ROLE, FORBIDDEN_RESPONSE, ROOM_NOT_UPDATE, ROOM_NOT_CREATED } from '../constants/response';
 import { BlockRequest } from '../interfaces/request';
+import emitRoomDeletionEvent from "../sockets/roomDeletionEvent";
+import emitRoomEnablationEvent from '../sockets/roomEnablationEvent';
+
 
 export const SHOP_SERVICE = process.env.SHOP_SERVICE + "/";
 const router: Router = express.Router();
@@ -157,6 +160,7 @@ router.put('/:room_id/enable', (req: Request, resp: Response) => {
                 else
                     room.deleted_by_seller = false;
 
+                emitRoomEnablationEvent(room_id, role, room.seller, room.buyer);
                 room.save();
                 resp.send({
                     status: true,
@@ -312,6 +316,7 @@ router.delete("/:room_id", (req: Request, resp: Response) => {
                 emitUserStatusChangeEvent(room.seller, room.buyer, UserRole.SELLER, room._id, false);
             }
 
+            emitRoomDeletionEvent(room_id, room.seller, room.buyer, role as string);
             room.save();
             resp.send({
                 status: true,
