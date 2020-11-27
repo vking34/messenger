@@ -1,16 +1,16 @@
 import { Server, Socket } from "socket.io";
 import { UserRole } from "../constants/user";
 import RoomModel from '../models/room';
-import { MESSENGER_NS } from './index';
+import { messengerNamespace } from './index';
 import { USER_STATUS_CHANGE_EVENT } from './userStatusChangeEvent';
 
-export default (io: Server, socket: Socket) => {
+export default (_io: Server, socket: Socket) => {
     socket.on('disconnect', () => {
         let { user_id, user_role } = socket.handshake.query;
 
         socket.leave(user_id);
 
-        io.of(MESSENGER_NS).in(user_id).clients((_e, otherConnections) => {
+        messengerNamespace.in(user_id).clients((_e, otherConnections) => {
             if (otherConnections.length === 0) {
                 let condition: any = {};
                 let projection: any;
@@ -35,9 +35,9 @@ export default (io: Server, socket: Socket) => {
 
                         roomRecords.forEach((room) => {
                             const room_id = room._id;
-                            io.of(MESSENGER_NS).in(room[target]).clients((_e_, clients) => {
+                            messengerNamespace.in(room[target]).clients((_e_, clients) => {
                                 if (clients.length > 0) {
-                                    io.of(MESSENGER_NS).in(room[target]).emit(USER_STATUS_CHANGE_EVENT, {
+                                    messengerNamespace.in(room[target]).emit(USER_STATUS_CHANGE_EVENT, {
                                         user_id,
                                         user_role,
                                         room_id,

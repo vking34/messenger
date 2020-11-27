@@ -38,23 +38,23 @@ $(function() {
     const MESSENGER_NS = API_URL + '/v1/conversations/events';
     var socket;
 
-    const AUCTION_RESULT_NS = API_URL + '/v1/conversations/auction-result-events';
-    let auctionSocket = io(AUCTION_RESULT_NS, {
-        path: '/v1/conversations/sockets',
-        transports: ['websocket'],
-        query: {
-            token: 'access_token',
-            auction_id: '3952'
-        }
-    });
+    // const AUCTION_RESULT_NS = API_URL + '/v1/conversations/auction-result-events';
+    // let auctionSocket = io(AUCTION_RESULT_NS, {
+    //     path: '/v1/conversations/sockets',
+    //     transports: ['websocket'],
+    //     query: {
+    //         token: 'access_token',
+    //         auction_id: '3952'
+    //     }
+    // });
 
-    auctionSocket.on('connect', () => {
-        console.log('auction socket is connected!');
-    })
+    // auctionSocket.on('connect', () => {
+    //     console.log('auction socket is connected!');
+    // })
 
-    auctionSocket.on('new_auction_result', auctionResult => {
-        console.log(auctionResult);
-    })
+    // auctionSocket.on('new_auction_result', auctionResult => {
+    //     console.log(auctionResult);
+    // })
 
     const addParticipantsMessage = (data) => {
 

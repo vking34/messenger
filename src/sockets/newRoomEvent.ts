@@ -1,16 +1,16 @@
 import { Server, Socket } from "socket.io";
 import { SHOP_SERVICE } from '../routes/room';
 import { RoomCreation } from '../interfaces/room';
-import { MESSENGER_NS } from './index';
+import { messengerNamespace } from './index';
 import RoomModel from '../models/room';
 import axios from 'axios';
 
 const CREATE_ROOM_EVENT = 'create_room';
-export default (io: Server, socket: Socket) => {
+export default (_io: Server, socket: Socket) => {
 
     socket.on(CREATE_ROOM_EVENT, (room: RoomCreation) => {
         room._id = room.buyer + '.' + room.seller;
-        io.of(MESSENGER_NS).to(room.creator).emit(CREATE_ROOM_EVENT, room);
+        messengerNamespace.to(room.creator).emit(CREATE_ROOM_EVENT, room);
 
         RoomModel.findById(room._id, (_e, roomRecord: any) => {
             if (!roomRecord) {
