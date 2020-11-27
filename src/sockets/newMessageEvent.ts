@@ -10,7 +10,7 @@ import RoomModel from '../models/room';
 const NEW_MESSAGE_EVENT = 'new_message';
 export default (io: Server, socket: Socket) => {
     socket.on(NEW_MESSAGE_EVENT, (msg: MessageFormat) => {
-        // console.log(NEW_MESSAGE_EVENT, msg);
+        console.log(NEW_MESSAGE_EVENT, msg);
         const { from, to } = msg;
         msg._id = cuid();   // generate message id
         msg.created_at = new Date().toISOString();

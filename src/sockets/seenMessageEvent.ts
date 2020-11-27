@@ -8,6 +8,8 @@ const SEEN_MESSAGES_EVENT = 'seen_messages';
 export default (_io: Server, socket: Socket) => {
 
     socket.on(SEEN_MESSAGES_EVENT, (data) => {
+        console.log(SEEN_MESSAGES_EVENT, data);
+
         const { room_id, to, from, last_message_id, last_message_created_at } = data;
 
         socket.to(to).emit(SEEN_MESSAGES_EVENT, data);
@@ -37,6 +39,8 @@ export default (_io: Server, socket: Socket) => {
 
                 room.save();
             }
+        }).catch(e => {
+            console.log(e);
         });
     });
 }

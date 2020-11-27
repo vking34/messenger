@@ -43,6 +43,13 @@ server.listen(port, () => {
     console.log('Server listening at port %d', port);
 });
 
+// handle uncaught rejections
 process.on('unhandledRejection', (reason, _promise) => {
     console.log('Unhandled Rejection at:', reason);
 });
+
+// handle uncaught exceptions
+process.on('uncaughtException', err => {
+    console.error('There was an uncaught error', err)
+    // process.exit(1) //mandatory (as per the Node.js docs)
+})
