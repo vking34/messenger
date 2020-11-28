@@ -150,21 +150,23 @@ router.get('/unseen-messages', async (req: Request, resp: Response) => {
     if (role === UserRole.BUYER) {
         condition = {
             buyer: user_id,
-            deleted_by_buyer: { $ne: true }
+            deleted_by_buyer: { $ne: true },
+            buyer_unseen_messages: { $gt: 0 }
         };
         groupOption = {
             _id: '$buyer',
-            sum: { '$sum': '$buyer_unseen_messages' }
+            sum: { '$sum': 1 }
         }
     }
     else {
         condition = {
             seller: user_id,
-            deleted_by_seller: { $ne: true }
+            deleted_by_seller: { $ne: true },
+            seller_unseen_messages: { $gt: 0 }
         };
         groupOption = {
             _id: '$seller',
-            sum: { '$sum': '$seller_unseen_messages' }
+            sum: { '$sum': 1 }
         }
     }
 
