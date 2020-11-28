@@ -144,7 +144,7 @@ router.post("/", async (req: Request, resp: Response) => {
 // get number of unseen messages
 router.get('/unseen-messages', async (req: Request, resp: Response) => {
     const { user_id, role } = req.query;
-    let condition, groupOption;
+    let condition;
 
 
     if (role === UserRole.BUYER) {
@@ -153,10 +153,6 @@ router.get('/unseen-messages', async (req: Request, resp: Response) => {
             deleted_by_buyer: { $ne: true },
             buyer_unseen_messages: { $gt: 0 }
         };
-        groupOption = {
-            _id: '$buyer',
-            sum: { '$sum': 1 }
-        }
     }
     else {
         condition = {
@@ -164,29 +160,18 @@ router.get('/unseen-messages', async (req: Request, resp: Response) => {
             deleted_by_seller: { $ne: true },
             seller_unseen_messages: { $gt: 0 }
         };
-        groupOption = {
-            _id: '$seller',
-            sum: { '$sum': 1 }
-        }
     }
 
     try {
-        let result = await RoomModel.aggregate([
-            { '$match': condition },
-            {
-                '$group': groupOption
-            }
-        ])
+        let unseen_messages = await RoomModel.find(condition).count();
 
-        if (result && result[0]) {
-            resp.send({
-                unseen_messages: result[0].sum,
-                filters: {
-                    user_id,
-                    role,
-                }
-            })
-        }
+        resp.send({
+            unseen_messages,
+            filters: {
+                user_id,
+                role,
+            }
+        });
     }
     catch (e) {
         resp.send({
