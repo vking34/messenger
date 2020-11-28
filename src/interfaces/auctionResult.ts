@@ -1,4 +1,4 @@
-export interface AuctionResult {
+export interface AuctionEvent {
     id: number,
     type: string,
     phaseId: number,
@@ -9,5 +9,6 @@ export interface AuctionResult {
     currentPrice: number,
     priceBidAutoHighest: number,
     timeStart: number,
-    timeEnd: number
+    timeEnd: number,
+    isSold: number
 };

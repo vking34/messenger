@@ -1,7 +1,7 @@
 import { Kafka } from 'kafkajs';
 import { SchemaRegistry, AvroKafka } from '@ovotech/avro-kafkajs';
-import { AuctionResult } from '../interfaces/auctionResult';
-import boardcastAuctionResult from '../sockets/newAuctionResultEvent';
+import { AuctionEvent } from '../interfaces/auctionResult';
+import boardcastAuctionEvent from '../sockets/newAuctionResultEvent';
 
 const {
     SCHEMA_REGISTRY_URL,
@@ -26,9 +26,9 @@ export default async () => {
             await consumer.subscribe({
                 topic: 'chozoi.socket.auction.result'
             });
-            await consumer.run<AuctionResult>({
+            await consumer.run<AuctionEvent>({
                 eachMessage: async ({ message }) => {
-                    boardcastAuctionResult(message.value);
+                    boardcastAuctionEvent(message.value);
                 }
             });
             connected = true;
