@@ -10,7 +10,7 @@
 
 ## API
 ### Rest API
-- Postman docs: https://documenter.getpostman.com/view/4640091/TVRd8qr4
+- Postman docs: https://documenter.getpostman.com/view/4640091/TVmJgdx7
 
 ### Socket
 1. Handshake:
