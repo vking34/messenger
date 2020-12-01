@@ -18,7 +18,7 @@ export default (_io: Server, socket: Socket) => {
         messengerNamespace.in(to).emit(NEW_MESSAGE_EVENT, msg);
 
         msg.updated_at = msg.created_at;
-        console.log(NEW_MESSAGE_EVENT, msg);
+        // console.log(NEW_MESSAGE_EVENT, msg);
         MessageModel
             .create({
                 ...msg,
