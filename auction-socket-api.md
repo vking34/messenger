@@ -31,6 +31,7 @@ let auctionSocket = io(AUCTION_RESULT_NS, {
           - ```priceBidAutoHighest```: long
           - ```timeStart```: long. The starting time of the next phase = the ending time of the current phase + 3s
           - ```timeEnd```: long.
+          - ```isSold```: int. 0 - not sold yet, 1 - sold. default: 0 
 
 ## Get name of winner
 - API: {account_service}/v1/users/\<user-id>
