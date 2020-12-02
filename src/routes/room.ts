@@ -23,7 +23,6 @@ router.get("", async (req: Request, resp: Response) => {
         sortOptions,
         condition: any = {};
 
-    // condition.enable = { $ne: false };
     if (role === UserRole.BUYER) {
         condition.buyer = user_id;
         condition.$or = [
@@ -149,32 +148,41 @@ router.post("/", async (req: Request, resp: Response) => {
     }
 });
 
-// get number of unseen messages
-router.get('/unseen-messages', async (req: Request, resp: Response) => {
+// get number of unseen rooms
+router.get('/unseen', async (req: Request, resp: Response) => {
     const { user_id, role } = req.query;
     let condition;
-
 
     if (role === UserRole.BUYER) {
         condition = {
             buyer: user_id,
-            deleted_by_buyer: { $ne: true },
+            $or: [
+                { deleted_by_buyer: { $ne: true } },
+                {
+                    $expr: { $gt: ['$buyer_last_message.created_at', '$buyer_deleted_at'] }
+                }
+            ],
             buyer_unseen_messages: { $gt: 0 }
         };
     }
     else {
         condition = {
             seller: user_id,
-            deleted_by_seller: { $ne: true },
+            $or: [
+                { deleted_by_seller: { $ne: true } },
+                {
+                    $expr: { $gt: ['$seller_last_message.created_at', '$seller_deleted_at'] }
+                }
+            ],
             seller_unseen_messages: { $gt: 0 }
         };
     }
 
     try {
-        let unseen_messages = await RoomModel.find(condition).count();
+        let unseen_rooms = await RoomModel.find(condition).count();
 
         resp.send({
-            unseen_messages,
+            unseen_rooms,
             filters: {
                 user_id,
                 role,
@@ -183,7 +191,7 @@ router.get('/unseen-messages', async (req: Request, resp: Response) => {
     }
     catch (e) {
         resp.send({
-            unseen_messages: 0,
+            unseen_rooms: 0,
             filters: {
                 user_id,
                 role,
