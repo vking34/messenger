@@ -179,7 +179,7 @@ router.get('/unseen', async (req: Request, resp: Response) => {
     }
 
     try {
-        let unseen_rooms = await RoomModel.find(condition).count();
+        let unseen_rooms = await RoomModel.count(condition);
 
         resp.send({
             unseen_rooms,
@@ -190,6 +190,7 @@ router.get('/unseen', async (req: Request, resp: Response) => {
         });
     }
     catch (e) {
+        console.log(e);
         resp.send({
             unseen_rooms: 0,
             filters: {
