@@ -14,13 +14,23 @@ export default (_io: Server, socket: Socket) => {
     let sortOptions: any;
     if (user_role === UserRole.BUYER) {
         condition.buyer = user_id;
-        condition.deleted_by_buyer = { $ne: true };
+        condition.$or = [
+            { deleted_by_buyer: { $ne: true } },
+            {
+                $expr: { $gt: ['$buyer_last_message.created_at', '$buyer_deleted_at'] }
+            }
+        ];
         projection = { buyer_info: 0, pinned_by_seller: 0, seller_unseen_messages: 0 };
         sortOptions = { pinned_by_buyer: -1, 'buyer_last_message.created_at': -1 };
     }
     else {
         condition.seller = user_id;
-        condition.deleted_by_seller = { $ne: true };
+        condition.$or = [
+            { deleted_by_seller: { $ne: true } },
+            {
+                $expr: { $gt: ['$seller_last_message.created_at', '$seller_deleted_at'] }
+            }
+        ];
         projection = { shop: 0, pinned_by_buyer: 0, buyer_unseen_messages: 0 };
         sortOptions = { pinned_by_seller: -1, 'seller_last_message.created_at': -1 };
     }
