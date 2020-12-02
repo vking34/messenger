@@ -148,5 +148,9 @@
 
 ## References
 1. Socket.io
-     - Server: https://socket.io/docs/server-api/
-     - Client: https://socket.io/docs/client-api/
+    - Server: https://socket.io/docs/server-api/
+    - Client: https://socket.io/docs/client-api/
+
+2. Kafka
+    - https://www.npmjs.com/package/@ovotech/avro-kafkajs
+    

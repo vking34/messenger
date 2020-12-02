@@ -26,13 +26,17 @@ router.get("", async (req: Request, resp: Response) => {
     // condition.enable = { $ne: false };
     if (role === UserRole.BUYER) {
         condition.buyer = user_id;
-        condition.deleted_by_buyer = { $ne: true };
+        condition.$or = [
+            { deleted_by_buyer: { $ne: true } },
+            {
+                $expr: { $gt: ['$buyer_last_message.created_at', '$buyer_deleted_at'] }
+            }
+        ];
         projection = {
             buyer_info: 0,
             pinned_by_seller: 0,
             seller_unseen_messages: 0,
             seller_deleted_at: 0,
-            deleted_by_buyer: 0,
             deleted_by_seller: 0,
             seller_last_message: 0
         };
@@ -46,14 +50,18 @@ router.get("", async (req: Request, resp: Response) => {
         }
     } else {
         condition.seller = user_id;
-        condition.deleted_by_seller = { $ne: true };
+        condition.$or = [
+            { deleted_by_seller: { $ne: true } },
+            {
+                $expr: { $gt: ['$seller_last_message.created_at', '$seller_deleted_at'] }
+            }
+        ];
         projection = {
             shop: 0,
             pinned_by_buyer: 0,
             buyer_unseen_messages: 0,
             buyer_deleted_at: 0,
             deleted_by_buyer: 0,
-            deleted_by_seller: 0,
             buyer_last_message: 0
         };
         sortOptions = {
@@ -332,6 +340,7 @@ router.put("/:room_id/seen", (req: Request, resp: Response) => {
 });
 
 // delete room
+// TODO: remove fields 'deleted_by_buyer', 'deleted_by_seller' and change finding condition.
 router.delete("/:room_id", (req: Request, resp: Response) => {
     const room_id = req.params.room_id;
     const { role } = req.query;
