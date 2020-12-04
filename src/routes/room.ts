@@ -5,10 +5,10 @@ import { MessageModel } from "../models/message";
 import { UserRole } from "../constants/user";
 import axios from "axios";
 import { UserRequest } from "../interfaces/user";
-import emitUserStatusChangeEvent from "../sockets/userStatusChangeEvent";
+// import emitUserStatusChangeEvent from "../sockets/userStatusChangeEvent";
 import { ROOM_NOT_FOUND, MISSING_ROLE, FORBIDDEN_RESPONSE, ROOM_NOT_UPDATE, ROOM_NOT_CREATED } from '../constants/response';
 import { BlockRequest } from '../interfaces/request';
-// import emitRoomDeletionEvent from "../sockets/roomDeletionEvent";
+import emitRoomDeletionEvent from "../sockets/roomDeletionEvent";
 import emitRoomEnablationEvent from '../sockets/roomEnablationEvent';
 
 
@@ -367,17 +367,17 @@ router.delete("/:room_id", (req: Request, resp: Response) => {
                 room.buyer_last_message = undefined;
                 room.pinned_by_buyer = undefined;
                 room.buyer_unseen_messages = 0;
-                emitUserStatusChangeEvent(room.buyer, room.seller, UserRole.BUYER, room._id, false);
+                // emitUserStatusChangeEvent(room.buyer, room.seller, UserRole.BUYER, room._id, false);
             } else {
                 room.deleted_by_seller = true;
                 room.seller_deleted_at = now;
                 room.seller_last_message = undefined;
                 room.pinned_by_seller = undefined;
                 room.seller_unseen_messages = 0;
-                emitUserStatusChangeEvent(room.seller, room.buyer, UserRole.SELLER, room._id, false);
+                // emitUserStatusChangeEvent(room.seller, room.buyer, UserRole.SELLER, room._id, false);
             }
 
-            // emitRoomDeletionEvent(room_id, room.seller, room.buyer, role as string);
+            emitRoomDeletionEvent(room_id, room.seller, room.buyer, role as string);
             room.save();
             resp.send({
                 status: true,
