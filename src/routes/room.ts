@@ -8,7 +8,7 @@ import { UserRequest } from "../interfaces/user";
 import emitUserStatusChangeEvent from "../sockets/userStatusChangeEvent";
 import { ROOM_NOT_FOUND, MISSING_ROLE, FORBIDDEN_RESPONSE, ROOM_NOT_UPDATE, ROOM_NOT_CREATED } from '../constants/response';
 import { BlockRequest } from '../interfaces/request';
-import emitRoomDeletionEvent from "../sockets/roomDeletionEvent";
+// import emitRoomDeletionEvent from "../sockets/roomDeletionEvent";
 import emitRoomEnablationEvent from '../sockets/roomEnablationEvent';
 
 
@@ -377,7 +377,7 @@ router.delete("/:room_id", (req: Request, resp: Response) => {
                 emitUserStatusChangeEvent(room.seller, room.buyer, UserRole.SELLER, room._id, false);
             }
 
-            emitRoomDeletionEvent(room_id, room.seller, room.buyer, role as string);
+            // emitRoomDeletionEvent(room_id, room.seller, room.buyer, role as string);
             room.save();
             resp.send({
                 status: true,
