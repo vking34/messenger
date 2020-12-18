@@ -33,8 +33,8 @@ $(function() {
     var $sendBtn = $('#sendMsgBtn');
 
     // const API_URL = 'https://api.chozoi.com';
-    // const API_URL = 'https://api.chozoi.vn';
-    const API_URL = 'http://localhost:3002';
+    const API_URL = 'https://api.chozoi.vn';
+    // const API_URL = 'http://localhost:3002';
     const MESSENGER_NS = API_URL + '/v1/conversations/events';
     var socket;
 
