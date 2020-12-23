@@ -44,14 +44,14 @@ messengerNamespace.use((socket: Socket, next) => {
 });
 
 // 1.2. Events
-import disconnectEvent from './disconnectEvent';
-import handleNewMessageEvent from './newMessageEvent';
-import handleNewRoomEvent from './newRoomEvent';
-import handleTypingEvent from './typingEvent';
-import handleStopTypingEvent from './stopTypingEvent';
-import handleSeenMessageEvent from './seenMessageEvent';
-import handleVerifyUser from './verifyUserEvent';
-import scanActiveUsers from './scanActiveUsers';
+import disconnectEvent from './messengers/disconnectEvent';
+import handleNewMessageEvent from './messengers/newMessageEvent';
+import handleNewRoomEvent from './messengers/newRoomEvent';
+import handleTypingEvent from './messengers/typingEvent';
+import handleStopTypingEvent from './messengers/stopTypingEvent';
+import handleSeenMessageEvent from './messengers/seenMessageEvent';
+import handleVerifyUser from './messengers/verifyUserEvent';
+import scanActiveUsers from './messengers/scanActiveUsers';
 
 
 messengerNamespace.on('connection', (socket: Socket) => {
@@ -103,7 +103,7 @@ auctionNamespace.use((socket: Socket, next) => {
 });
 
 // 2.2. Events
-import handleAuctionUserDisconnectEvent from './auctionUserDisconnectEvent';
+import handleAuctionUserDisconnectEvent from './auctions/auctionUserDisconnectEvent';
 
 auctionNamespace.on('connection', (socket: Socket) => {
     // console.log('new socket connected to auction id:', socket['auctionId']);
@@ -118,8 +118,9 @@ export const auctionSetNamespace = io.of(AUCTION_SET_RESULT_NS);
 // 3.1. Middlewares
 auctionSetNamespace.use((socket: Socket, next) => {
     let { token } = socket.handshake.query;
-    let auction_ids: string[] = socket.handshake.query.auction_ids;
-
+    let auction_str_ids: string = socket.handshake.query.auction_ids;
+    let auction_ids: string[] = auction_str_ids.split(',');
+    
     // ! TODO(vuong, khanh): check token
     if (token && auction_ids?.length > 0) {
         auction_ids.forEach(auction_id => socket.join(auction_id));

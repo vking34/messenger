@@ -1,8 +1,8 @@
 import { Server, Socket } from "socket.io";
-import { SHOP_SERVICE } from '../routes/room';
-import { RoomCreation } from '../interfaces/room';
-import { messengerNamespace } from './index';
-import RoomModel from '../models/room';
+import { SHOP_SERVICE } from '../../routes/room';
+import { RoomCreation } from '../../interfaces/room';
+import { messengerNamespace } from '../index';
+import RoomModel from '../../models/room';
 import axios from 'axios';
 
 const CREATE_ROOM_EVENT = 'create_room';

@@ -1,9 +1,10 @@
 import { Server, Socket } from "socket.io";
-import { UserRole } from "../constants/user";
-import RoomModel from '../models/room';
-import { messengerNamespace } from './index';
-import { RoomStatus, StatusRoomList } from '../interfaces/room';
+import { UserRole } from "../../constants/user";
+import RoomModel from '../../models/room';
+import { messengerNamespace } from '../index';
+import { RoomStatus, StatusRoomList } from '../../interfaces/room';
 import { USER_STATUS_CHANGE_EVENT } from './userStatusChangeEvent';
+
 
 const ACTIVE_USER_LIST_EVENT = 'active_user_list';
 export default (_io: Server, socket: Socket) => {

@@ -1,4 +1,4 @@
-import { messengerNamespace } from './index';
+import { messengerNamespace } from '../index';
 
 export const ROOM_DELETION_EVENT = 'room_deletion';
 export default (room_id: string, seller: string, buyer: string, deletion_role: string) => {

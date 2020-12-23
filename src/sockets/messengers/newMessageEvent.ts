@@ -1,11 +1,11 @@
 import { Server, Socket } from "socket.io";
-import { MessageFormat } from '../interfaces/message';
+import { MessageFormat } from '../../interfaces/message';
 import cuid from 'cuid';
-import { messengerNamespace } from './index';
+import { messengerNamespace } from '../index';
 
 // models
-import { MessageModel } from '../models/message';
-import RoomModel from '../models/room';
+import { MessageModel } from '../../models/message';
+import RoomModel from '../../models/room';
 
 const NEW_MESSAGE_EVENT = 'new_message';
 export default (_io: Server, socket: Socket) => {

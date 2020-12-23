@@ -8,8 +8,8 @@ import { UserRequest } from "../interfaces/user";
 // import emitUserStatusChangeEvent from "../sockets/userStatusChangeEvent";
 import { ROOM_NOT_FOUND, MISSING_ROLE, FORBIDDEN_RESPONSE, ROOM_NOT_UPDATE, ROOM_NOT_CREATED } from '../constants/response';
 import { BlockRequest } from '../interfaces/request';
-import emitRoomDeletionEvent from "../sockets/roomDeletionEvent";
-import emitRoomEnablationEvent from '../sockets/roomEnablationEvent';
+import emitRoomDeletionEvent from "../sockets/messengers/roomDeletionEvent";
+import emitRoomEnablationEvent from '../sockets/messengers/roomEnablationEvent';
 
 
 export const SHOP_SERVICE = process.env.SHOP_SERVICE + "/";

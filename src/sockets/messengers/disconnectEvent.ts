@@ -1,7 +1,7 @@
 import { Server, Socket } from "socket.io";
-import { UserRole } from "../constants/user";
-import RoomModel from '../models/room';
-import { messengerNamespace } from './index';
+import { UserRole } from "../../constants/user";
+import RoomModel from '../../models/room';
+import { messengerNamespace } from '../index';
 import { USER_STATUS_CHANGE_EVENT } from './userStatusChangeEvent';
 
 export default (_io: Server, socket: Socket) => {

@@ -1,5 +1,5 @@
-import { UserRole } from '../constants/user';
-import { messengerNamespace } from './index';
+import { UserRole } from '../../constants/user';
+import { messengerNamespace } from '../index';
 import { USER_STATUS_CHANGE_EVENT } from './userStatusChangeEvent';
 
 

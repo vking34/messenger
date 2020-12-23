@@ -1,8 +1,8 @@
 import { Server, Socket } from "socket.io";
 
 // models
-import { MessageModel } from '../models/message';
-import RoomModel from '../models/room';
+import { MessageModel } from '../../models/message';
+import RoomModel from '../../models/room';
 
 const SEEN_MESSAGES_EVENT = 'seen_messages';
 export default (_io: Server, socket: Socket) => {

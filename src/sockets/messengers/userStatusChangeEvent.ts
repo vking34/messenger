@@ -1,4 +1,4 @@
-import { messengerNamespace } from './index';
+import { messengerNamespace } from '../index';
 
 export const USER_STATUS_CHANGE_EVENT = 'user_status_change';
 export default (sender: string, receiver: string, user_role: string, room_id: string, status: boolean) => {
