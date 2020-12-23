@@ -1,5 +1,5 @@
-import { auctionNamespace } from './index';
-import { AuctionEvent } from '../interfaces/auctionResult';
+import { auctionNamespace, auctionSetNamespace } from '../index';
+import { AuctionEvent } from '../../interfaces/auctionResult';
 
 const NEW_AUCTION_RESULT = 'new_auction_result';
 export default (auctionEvent: AuctionEvent) => {
@@ -7,4 +7,9 @@ export default (auctionEvent: AuctionEvent) => {
     auctionNamespace
         .in(auctionEvent.id.toString())
         .emit(NEW_AUCTION_RESULT, auctionEvent);
+
+    auctionSetNamespace
+        .in(auctionEvent.id.toString())
+        .emit(NEW_AUCTION_RESULT, auctionEvent)
+        ;
 }

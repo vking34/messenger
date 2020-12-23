@@ -2,7 +2,7 @@ version: '2'
 
 services:
   redis:
-    container_name: cache
+    container_name: socket-cache
     image: 'docker.io/bitnami/redis:6.0-debian-10'
     environment:
       # ALLOW_EMPTY_PASSWORD is recommended only for development.

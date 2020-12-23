@@ -1,7 +1,7 @@
 import { Kafka } from 'kafkajs';
 import { SchemaRegistry, AvroKafka } from '@ovotech/avro-kafkajs';
 import { AuctionEvent } from '../interfaces/auctionResult';
-import boardcastAuctionEvent from '../sockets/newAuctionResultEvent';
+import boardcastAuctionEvent from '../sockets/auctions/newAuctionResultEvent';
 
 let {
     SCHEMA_REGISTRY_URL,

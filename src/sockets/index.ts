@@ -111,6 +111,33 @@ auctionNamespace.on('connection', (socket: Socket) => {
     handleAuctionUserDisconnectEvent(socket);
 });
 
+// 3. Auctions Result Namespace
+export const AUCTION_SET_RESULT_NS = process.env.AUCTIONS_RESULT_NAMESPACE;
+export const auctionSetNamespace = io.of(AUCTION_SET_RESULT_NS);
+
+// 3.1. Middlewares
+auctionSetNamespace.use((socket: Socket, next) => {
+    let { token } = socket.handshake.query;
+    let auction_ids: string[] = socket.handshake.query.auction_ids;
+
+    // ! TODO(vuong, khanh): check token
+    if (token && auction_ids?.length > 0) {
+        auction_ids.forEach(auction_id => socket.join(auction_id));
+        socket['auction_ids'] = auction_ids;
+        return next();
+    }
+    else {
+        return next(new Error('Unauthorization or Missing auction id'));
+    }
+})
+
+// 3.2. Events
+import handleAuctionSetUserDisconnectEvent from './auctions/auctionSetUserDisconnectEvent';
+
+auctionSetNamespace.on('connection', (socket: Socket) => {
+    handleAuctionSetUserDisconnectEvent(socket);
+});
+
 
 // error
 io.on('error', reason => {
