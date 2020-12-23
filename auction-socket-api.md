@@ -2,19 +2,36 @@
 
 ## Lib: socket.io-client
 ## Handshake:
-```
-const API_URL = 'https://api.chozoi.com';
-const AUCTION_RESULT_NS = API_URL + '/v1/conversations/auction-result-events';
 
-let auctionSocket = io(AUCTION_RESULT_NS, {
-        path: '/v1/conversations/sockets',
-        transports: ['websocket'],
-        query: {
-            token: 'access_token',
-            auction_id: '3753'
-        }
-    });
-```
+- Auction Result Namespace:
+    ```
+    const API_URL = 'https://api.chozoi.com';
+    const AUCTION_RESULT_NS = API_URL + '/v1/conversations/auction-result-events';
+
+    let auctionSocket = io(AUCTION_RESULT_NS, {
+            path: '/v1/conversations/sockets',
+            transports: ['websocket'],
+            query: {
+                token: 'access_token',
+                auction_id: '3753'
+            }
+        });
+    ```
+
+- Auction Set Result Namespace:
+    ```
+    const API_URL = 'https://api.chozoi.com';
+    const AUCTION_SET_RESULT_NS = API_URL + '/v1/conversations/auction-set-result-events';
+
+    let auctionSetSocket = io(AUCTION_SET_RESULT_NS, {
+            path: '/v1/conversations/sockets',
+            transports: ['websocket'],
+            query: {
+                token: 'access_token',
+                auction_ids: '3753,4523'
+            }
+        });
+    ```
 
 ## Events: (server ```emit```, client ```on```)
 
