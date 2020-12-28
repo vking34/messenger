@@ -3,6 +3,11 @@ import { AccountService } from '../constants/api';
 
 export const getUserName = async (userId: number) => {
     const url = `${AccountService}/${userId}`;
-    const userResponse = await axios.get(url);
-    return userResponse.data.name;
+    try {
+        const userResponse = await axios.get(url);
+        return userResponse.data.name;
+    }
+    catch (e) {
+        return '';
+    }
 }
