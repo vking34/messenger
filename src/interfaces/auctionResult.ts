@@ -10,5 +10,6 @@ export interface AuctionEvent {
     priceBidAutoHighest: number,
     timeStart: number,
     timeEnd: number,
-    isSold: number
+    isSold: number,
+    winnerName: string
 };

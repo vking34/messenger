@@ -12,5 +12,6 @@ export SCHEMA_REGISTRY_URL=http://172.26.12.211:8081
 export KAFKA_APP_ID=auction-consumer-node-local
 export CONSUMER_GROUP_ID=auction-event-consumer-node-local
 export AUCTIONS_RESULT_NAMESPACE=/v1/conversations/auction-set-result-events
+export ACCOUNT_SERVICE=http://api.chozoi.com/v1/users
 npm run dev
 # npm run start

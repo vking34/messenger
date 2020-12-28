@@ -1,0 +1,1 @@
+export const AccountService: string = process.env.ACCOUNT_SERVICE
