@@ -49,7 +49,7 @@
           - ```timeStart```: long. The starting time of the next phase = the ending time of the current phase + 3s
           - ```timeEnd```: long.
           - ```isSold```: int. 0 - not sold yet, 1 - sold. default: 0
-          - ```winnerName```: string
+          - ```winnerName```: string. present only in Auction Set namespace.
 
 ## Get name of winner
 - API: {account_service}/v1/users/\<user-id>
