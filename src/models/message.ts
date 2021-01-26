@@ -1,5 +1,4 @@
-import { Schema } from "mongoose";
-import mongoose from './index';
+import mongoose, { Schema } from "mongoose";
 
 const MessageSchema: Schema = new mongoose.Schema(
      {

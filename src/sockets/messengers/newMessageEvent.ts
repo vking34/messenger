@@ -18,12 +18,10 @@ export default (_io: Server, socket: Socket) => {
         messengerNamespace.in(to).emit(NEW_MESSAGE_EVENT, msg);
 
         msg.updated_at = msg.created_at;
+        msg.is_seen = false;
         // console.log(NEW_MESSAGE_EVENT, msg);
         MessageModel
-            .create({
-                ...msg,
-                is_seen: false
-            })
+            .create(msg)
             .then(message => {
                 RoomModel.findById(msg.room_id, (_e, room: any) => {
                     if (room) {

@@ -1,5 +1,4 @@
-import { Schema } from "mongoose";
-import mongoose from './index';
+import mongoose, { Schema } from "mongoose";
 import { MessageSchema } from './message';
 
 
