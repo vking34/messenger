@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
   redis:
@@ -9,11 +9,11 @@ services:
       - ALLOW_EMPTY_PASSWORD=yes
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
     ports:
-      - '6379:6379'
+      - 6379:6379
     expose:
          - 6379
     volumes:
-      - 'redis_data:/messenger/redis/data'
+      - cz_chat_redis_data:/bitnami/redis/data
 
   mongodb:
     image: docker.io/bitnami/mongodb:4.4-debian-10
@@ -21,13 +21,13 @@ services:
       MONGO_INITDB_ROOT_USERNAME: user
       MONGO_INITDB_ROOT_PASSWORD: vking34
     ports:
-      - "27017:27017"
+      - 27017:27017
     volumes:
-      - 'mongodb_data:/bitnami/mongodb'
+      - cz_chat_mongodb_data:/bitnami/mongodb
 
 volumes:
-  redis_data:
+  cz_chat_redis_data:
     driver: local
   
-  mongodb_data:
+  cz_chat_mongodb_data:
     driver: local
