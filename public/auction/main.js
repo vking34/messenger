@@ -32,10 +32,10 @@ $(function() {
     var $receiver = $('.receiverId');
     var $sendBtn = $('#sendMsgBtn');
 
-    // const API_URL = 'https://api.chozoi.com';
-    const API_URL = 'https://api.chozoi.vn';
+    const API_URL = 'https://api.chozoi.com';
+    // const API_URL = 'https://api.chozoi.vn';
     // const API_URL = 'http://localhost:3002';
-    const AUCTION_RESULT_NS = API_URL + '/v1/conversations/auction-set-result-events';
+    const AUCTION_RESULT_NS = API_URL + '/v1/conversations/auction-result-list-events';
 
     $sendBtn.click(() => {
         console.log("sending...");
@@ -50,7 +50,7 @@ $(function() {
     // Sets the client's username
     const createRoom = () => {
         const auctionId = cleanInput($auctionId.val().trim());
-        const auctionIds = '40497'
+        const auctionIds = '4717,4720,4716'
 
         let auctionSocket = io(AUCTION_RESULT_NS, {
             path: '/v1/conversations/sockets',

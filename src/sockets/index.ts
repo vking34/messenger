@@ -118,13 +118,13 @@ export const auctionSetNamespace = io.of(AUCTION_SET_RESULT_NS);
 // 3.1. Middlewares
 auctionSetNamespace.use((socket: Socket, next) => {
     let { token } = socket.handshake.query;
-    let auction_str_ids: string = socket.handshake.query.auction_ids;
-    let auction_ids: string[] = auction_str_ids.split(',');
+    let auctionListStr: string = socket.handshake.query.auction_ids;
+    let auctionIds: string[] = auctionListStr.split(',');
     
     // ! TODO(vuong, khanh): check token
-    if (token && auction_ids?.length > 0) {
-        auction_ids.forEach(auction_id => socket.join(auction_id));
-        socket['auction_ids'] = auction_ids;
+    if (token && auctionIds?.length > 0) {
+        auctionIds.forEach(auction_id => socket.join(auction_id));
+        socket['auction_ids'] = auctionIds;
         return next();
     }
     else {
