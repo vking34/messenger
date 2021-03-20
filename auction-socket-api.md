@@ -18,10 +18,10 @@
         });
     ```
 
-- Auction Set Result Namespace:
+- Auction Result List Namespace:
     ```
     const API_URL = 'https://api.chozoi.com';
-    const AUCTION_SET_RESULT_NS = API_URL + '/v1/conversations/auction-set-result-events';
+    const AUCTION_SET_RESULT_NS = API_URL + '/v1/conversations/auction-result-list-events';
 
     let auctionSetSocket = io(AUCTION_SET_RESULT_NS, {
             path: '/v1/conversations/sockets',

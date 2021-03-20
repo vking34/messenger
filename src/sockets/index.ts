@@ -111,7 +111,7 @@ auctionNamespace.on('connection', (socket: Socket) => {
     handleAuctionUserDisconnectEvent(socket);
 });
 
-// 3. Auctions Result Namespace
+// 3. Auction Result List Namespace
 export const AUCTION_SET_RESULT_NS = process.env.AUCTIONS_RESULT_NAMESPACE;
 export const auctionSetNamespace = io.of(AUCTION_SET_RESULT_NS);
 
