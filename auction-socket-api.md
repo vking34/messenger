@@ -21,9 +21,9 @@
 - Auction Result List Namespace:
     ```
     const API_URL = 'https://api.chozoi.com';
-    const AUCTION_SET_RESULT_NS = API_URL + '/v1/conversations/auction-result-list-events';
+    const AUCTION_RESULT_LIST_NS = API_URL + '/v1/conversations/auction-result-list-events';
 
-    let auctionSetSocket = io(AUCTION_SET_RESULT_NS, {
+    let auctionSetSocket = io(AUCTION_RESULT_LIST_NS, {
             path: '/v1/conversations/sockets',
             transports: ['websocket'],
             query: {
